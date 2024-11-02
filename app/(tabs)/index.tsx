@@ -4,8 +4,12 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import DayCalendar from '@/components/DayCalendar';
+import DayCalendarDot from '@/components/DayCalendarDot';
+import Commodity from '@/components/Commodity';
 
 export default function HomeScreen() {
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -16,19 +20,23 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+        <DayCalendar number="01"/>
+        <DayCalendarDot number="02"/>
+        <DayCalendar number="03"/>
+        <DayCalendar number="04"/>
+        <DayCalendar number="05"/>
+        <DayCalendar number="06"/>
+        <DayCalendar number="07"/>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
+        <ThemedText type="subtitle">Khuất Anh Tú</ThemedText>
+        <Commodity
+            _soluong="5"
+            _donvi="KG"
+            _tenthucpham="Gạo ST25"
+            _phanloai="Ngũ cốc > Gạo"
+             _noimua="Chợ Thịnh Liệt"
+             _diachi="Kho 4 Đ. Giải Phóng, Thịnh Liệt, ..."/>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 2: Explore</ThemedText>
