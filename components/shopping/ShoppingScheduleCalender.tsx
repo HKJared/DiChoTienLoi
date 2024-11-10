@@ -87,35 +87,39 @@ const ShoppingScheduleCalender = ({
       <View style={shoppingScheduleStyle.containerSearch}>
         {/* Thanh search */}
         <View style={shoppingScheduleStyle.containerInputSearch}>
-          <TextInput
-            style={shoppingScheduleStyle.input}
-            placeholder="Tìm kiếm thực phẩm"
-            value={inputText}
-            onChangeText={setInputText}
-            onFocus={() => setSuggestionBoxVisible(true)}
-            onBlur={() => setSuggestionBoxVisible(false)}
-          />
-          <View style={shoppingScheduleStyle.lineHeight}></View>
-          <TouchableOpacity
-            style={shoppingScheduleStyle.containerImgSearch}
-            onPress={() => setSuggestionBoxVisible(false)}
-          >
-            <Image
-              source={require("@/assets/images/shopping/search-outline.png")}
-              style={shoppingScheduleStyle.iconSearch}
+          <View style={shoppingScheduleStyle.containerInput}>
+            <TextInput
+              style={shoppingScheduleStyle.input}
+              placeholder="Tìm kiếm thực phẩm"
+              value={inputText}
+              onChangeText={setInputText}
+              onFocus={() => setSuggestionBoxVisible(true)}
+              onBlur={() => setSuggestionBoxVisible(false)}
             />
-          </TouchableOpacity>
-        </View>
-        {/* Hộp gợi ý */}
-        {isSuggestionBoxVisible && (
-          <View style={shoppingScheduleStyle.suggestionBox}>
-            <View style={shoppingScheduleStyle.suggestionItem}>
-              <Text>Gợi ý 1</Text>
-            </View>
-            <Text style={shoppingScheduleStyle.suggestionItem}>Gợi ý 2</Text>
-            <Text style={shoppingScheduleStyle.suggestionItem}>Gợi ý 3</Text>
+            <View style={shoppingScheduleStyle.lineHeight}></View>
+            <TouchableOpacity
+              style={shoppingScheduleStyle.containerImgSearch}
+              onPress={() => setSuggestionBoxVisible(false)}
+            >
+              <Image
+                source={require("@/assets/images/shopping/search-outline.png")}
+                style={shoppingScheduleStyle.iconSearch}
+              />
+            </TouchableOpacity>
           </View>
-        )}
+
+          {/* Hộp gợi ý */}
+          {isSuggestionBoxVisible && (
+            <View style={shoppingScheduleStyle.suggestionBox}>
+              <View style={shoppingScheduleStyle.suggestionItem}>
+                <Text>Gợi ý 1</Text>
+              </View>
+              <Text style={shoppingScheduleStyle.suggestionItem}>Gợi ý 2</Text>
+              <Text style={shoppingScheduleStyle.suggestionItem}>Gợi ý 3</Text>
+            </View>
+          )}
+        </View>
+
         {/* Danh mục thực phẩm */}
         <View style={shoppingScheduleStyle.containerFoodCate}>
           <Text style={shoppingScheduleStyle.textFoodCate}>
