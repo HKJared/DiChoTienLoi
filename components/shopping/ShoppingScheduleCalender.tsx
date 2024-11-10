@@ -7,7 +7,7 @@ import {
   TextInput,
 } from "react-native";
 import React, { useState } from "react";
-import { Calendar } from "react-native-calendars"; // Thư viện lịch
+import { Calendar } from "react-native-calendars"; 
 import shoppingScheduleStyle from "@/styles/Shopping/shoppingSchedule";
 
 const getFormattedDate = (date: Date) => {
