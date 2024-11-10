@@ -106,7 +106,7 @@ const ShoppingScheduleCalender = ({
 
   const units = ["kg", "lạng", "gram", "đôi", "lít"];
 
-  const handleUnitPress = (unit) => {
+  const handleUnitPress = (unit: string) => {
     setSelectedUnit(unit); // Cập nhật đơn vị đã chọn
     setIsUnitBoxVisible(false); // Ẩn box lựa chọn khi đã chọn đơn vị
   };

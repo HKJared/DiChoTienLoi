@@ -11,4 +11,5 @@ export const colors = {
   bluebg: "#83CBEB",
   success: "#00AF9B",
   secondary: "#E6EDF5",
+  textsecondary: "#353C4B",
 };

@@ -43,6 +43,7 @@ const shoppingScheduleStyle = StyleSheet.create({
     zIndex: 2,
   },
   containerSearch: {
+    marginTop: 16,
     width: "100%",
     padding: 10,
     gap: 16,
