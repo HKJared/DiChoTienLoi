@@ -1,232 +1,240 @@
 const categoriesData = [
-    { 
-      id: 1,
-      text: "Món xào",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 2,
-      text: "Món chiên",
-      imageSource: require('../assets/monxao.png'),
-      active: true,
-    },
-    {
-      id: 3,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-  
-      id: 4,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-  
-      id: 5,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-  
-      id: 6,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-  
-      id: 7,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-  
-      id: 8,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-  
-      id: 9,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 10,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 11,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 12,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 13,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 14,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 15,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 16,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 17,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 18,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    {
-      id: 19,
-      text: "Món canh",
-      imageSource: require('../assets/monxao.png'),
-      active: false,
-    },
-    
+  {
+    "id": 1,
+    "name": "Món Xào",
+    "image_url": "https://example.com/images/mon-xao.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Món Luộc",
+    "image_url": "https://example.com/images/mon-luoc.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Món Nướng",
+    "image_url": "https://example.com/images/mon-nuong.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Món Nộm",
+    "image_url": "https://example.com/images/mon-nom.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Món Hầm",
+    "image_url": "https://example.com/images/mon-ham.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Món Canh",
+    "image_url": "https://example.com/images/mon-canh.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Món Gỏi",
+    "image_url": "https://example.com/images/mon-goi.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Món Chiên",
+    "image_url": "https://example.com/images/mon-chien.jpg"
+  },
+  {
+    "id": 9,
+    "name": "Món Kho",
+    "image_url": "https://example.com/images/mon-kho.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Món Tráng Miệng",
+    "image_url": "https://example.com/images/mon-trang-mieng.jpg"
+  }
 ];
 
 
-const recipeData = [
+const recipeData =[
   {
-    id: '1',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Bánh mì ốp la',
-    userName: 'Nguyễn Minh Tú',
-    time: '15 phút',
-    steps: '5 bước',
-    rating: '4.5',
-    views: '2500'
+    "id": 1,
+    "name": "Thịt Ba Chỉ Xào Mướp",
+    "category_id": 1,
+    "description": "Món thịt ba chỉ xào mướp thơm ngon, dễ làm, thích hợp cho bữa cơm gia đình.",
+    "time": 30,
+    "servings": 4,
+    "cost": 150000,
+    "kcal": 350,
+    "ingredients": [
+      {
+        "marketplace_item_id": 101,
+        "name": "Thịt Ba Chỉ",
+        "quantity": "300g"
+      },
+      {
+        "marketplace_item_id": 104,
+        "name": "Mướp",
+        "quantity": "1 quả"
+      },
+      {
+        "marketplace_item_id": 107,
+        "name": "Hành Tỏi",
+        "quantity": "50g"
+      },
+      {
+        "marketplace_item_id": 110,
+        "name": "Nước Mắm",
+        "quantity": "20ml"
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "name": "Chuẩn bị nguyên liệu",
+        "detail": "Thịt ba chỉ rửa sạch, thái lát mỏng. Mướp gọt vỏ, cắt khúc vừa ăn. Hành tỏi băm nhuyễn."
+      },
+      {
+        "step": 2,
+        "name": "Xào thịt",
+        "detail": "Cho thịt ba chỉ vào chảo, xào đến khi thịt hơi vàng, sau đó cho hành tỏi vào xào cùng."
+      },
+      {
+        "step": 3,
+        "name": "Xào mướp",
+        "detail": "Thêm mướp vào chảo, đảo đều. Nêm nước mắm, tiêu cho vừa ăn."
+      },
+      {
+        "step": 4,
+        "name": "Hoàn thành",
+        "detail": "Xào đến khi mướp chín mềm, thịt thấm gia vị, tắt bếp và thưởng thức."
+      }
+    ],
+    "total_views": 1234,
+    "average_rate": 4.5,
+    "user_fullname": "Nguyễn Văn A"
   },
   {
-    id: '2',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Phở bò',
-    userName: 'Lê Thị Lan',
-    time: '30 phút',
-    steps: '7 bước',
-    rating: '4.8',
-    views: '5000'
+    "id": 2,
+    "name": "Gà Nướng Mật Ong",
+    "category_id": 3,
+    "description": "Món gà nướng mật ong thơm ngon, dễ làm, thích hợp cho các bữa tiệc cuối tuần.",
+    "time": 45,
+    "servings": 4,
+    "cost": 180000,
+    "kcal": 400,
+    "ingredients": [
+      {
+        "marketplace_item_id": 102,
+        "name": "Gà Ta",
+        "quantity": "500g"
+      },
+      {
+        "marketplace_item_id": 111,
+        "name": "Mật Ong",
+        "quantity": "30ml"
+      },
+      {
+        "marketplace_item_id": 112,
+        "name": "Tỏi",
+        "quantity": "20g"
+      },
+      {
+        "marketplace_item_id": 113,
+        "name": "Gừng",
+        "quantity": "10g"
+      },
+      {
+        "marketplace_item_id": 114,
+        "name": "Hạt Nêm",
+        "quantity": "10g"
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "name": "Chuẩn bị nguyên liệu",
+        "detail": "Gà làm sạch, chặt miếng vừa ăn. Tỏi, gừng băm nhỏ."
+      },
+      {
+        "step": 2,
+        "name": "Ướp gia vị",
+        "detail": "Trộn mật ong, tỏi, gừng và hạt nêm với gà. Ướp trong 30 phút cho thấm gia vị."
+      },
+      {
+        "step": 3,
+        "name": "Nướng gà",
+        "detail": "Cho gà vào lò nướng ở nhiệt độ 180°C, nướng khoảng 30-40 phút cho gà chín vàng."
+      },
+      {
+        "step": 4,
+        "name": "Hoàn thành",
+        "detail": "Khi gà vàng đều, lấy ra và thưởng thức với cơm nóng."
+      }
+    ],
+    "total_views": 2345,
+    "average_rate": 4.8,
+    "user_fullname": "Trần Thị B"
   },
   {
-    id: '3',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Gỏi cuốn',
-    userName: 'Trần Văn Quân',
-    time: '20 phút',
-    steps: '6 bước',
-    rating: '4.3',
-    views: '3000'
-  },
-  {
-    id: '4',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Gỏi cuốn',
-    userName: 'Trần Văn Quân',
-    time: '20 phút',
-    steps: '6 bước',
-    rating: '4.3',
-    views: '3000'
-  },
-
-  {
-    id: '5',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Gỏi cuốn',
-    userName: 'Trần Văn Quân',
-    time: '20 phút',
-    steps: '6 bước',
-    rating: '4.3',
-    views: '3000'
-  },
-  {
-    id: '6',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Gỏi cuốn',
-    userName: 'Trần Văn Quân',
-    time: '20 phút',
-    steps: '6 bước',
-    rating: '4.3',
-    views: '3000'
-  },
-  {
-    id: '7',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Gỏi cuốn',
-    userName: 'Trần Văn Quân',
-    time: '20 phút',
-    steps: '6 bước',
-    rating: '4.3',
-    views: '3000'
-  },
-  {
-    id: '8',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Gỏi cuốn',
-    userName: 'Trần Văn Quân',
-    time: '20 phút',
-    steps: '6 bước',
-    rating: '4.3',
-    views: '3000'
-  },
-  {
-    id: '9',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Gỏi cuốn',
-    userName: 'Trần Văn Quân',
-    time: '20 phút',
-    steps: '6 bước',
-    rating: '4.3',
-    views: '3000'
-  },
-  {
-    id: '10',
-    imageSource: require('../assets/monxao.png'),
-    name: 'Gỏi cuốn',
-    userName: 'Trần Văn Quân',
-    time: '20 phút',
-    steps: '6 bước',
-    rating: '4.3',
-    views: '3000'
-  },
-];
-
+    "id": 3,
+    "name": "Canh Chua Cá Lóc",
+    "category_id": 6,
+    "description": "Món canh chua cá lóc đậm đà, chua cay rất hợp cho những ngày hè nóng bức.",
+    "time": 40,
+    "servings": 3,
+    "cost": 120000,
+    "kcal": 250,
+    "ingredients": [
+      {
+        "marketplace_item_id": 106,
+        "name": "Cá Lóc",
+        "quantity": "300g"
+      },
+      {
+        "marketplace_item_id": 115,
+        "name": "Dứa",
+        "quantity": "1 quả"
+      },
+      {
+        "marketplace_item_id": 116,
+        "name": "Cà Chua",
+        "quantity": "2 quả"
+      },
+      {
+        "marketplace_item_id": 117,
+        "name": "Ngò Ôm",
+        "quantity": "20g"
+      },
+      {
+        "marketplace_item_id": 118,
+        "name": "Măng Chua",
+        "quantity": "100g"
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "name": "Chuẩn bị nguyên liệu",
+        "detail": "Cá lóc làm sạch, cắt khúc. Dứa, cà chua thái lát. Ngò om rửa sạch."
+      },
+      {
+        "step": 2,
+        "name": "Nấu canh",
+        "detail": "Đun sôi nước, cho cá lóc vào nấu cùng dứa, cà chua và măng chua."
+      },
+      {
+        "step": 3,
+        "name": "Nêm gia vị",
+        "detail": "Nêm gia vị, thêm đường và nước mắm cho vừa ăn."
+      },
+      {
+        "step": 4,
+        "name": "Hoàn thành",
+        "detail": "Khi canh sôi, tắt bếp, cho ngò ôm vào, múc canh ra tô và thưởng thức."
+      }
+    ],
+    "total_views": 567,
+    "average_rate": 4.2,
+    "user_fullname": "Lê Văn C"
+  }
+]
 
 
 
