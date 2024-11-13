@@ -27,34 +27,55 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
-        name="explore"
+        name="shopping"
         options={{
-          title: "Explore",
+          title: "Shopping",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
+              name={focused ? "cart" : "cart-outline"}
               color={color}
             />
           ),
         }}
       />
       <Tabs.Screen
-        name="shopping"
-        options={{
-          title: "Shopping",
-          tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={
-                focused
-                  ? require("@/assets/images/tabBar/cartactive.png") // Hình ảnh khi nhấn
-                  : require("@/assets/images/tabBar/cart-large-minimalistic_svgrepo.com.png") // Hình ảnh khi chưa nhấn
-              }
-              style={{ width: 30, height: 30 }}
-            />
-          ),
-        }}
-      />
+          name="cooking"
+          options={{
+            title: "Cooking",
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon
+                name={focused ? "pizza" : "pizza-outline"}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="family"
+          options={{
+            title: "Family",
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon
+                name={focused ? "people" : "people-outline"}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="user"
+          options={{
+            title: "Cá nhân",
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon
+                name={focused ? "person" : "person-outline"}
+                color={color}
+              />
+            ),
+          }}
+        />
     </Tabs>
   );
 }
