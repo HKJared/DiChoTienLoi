@@ -6,7 +6,7 @@
       "description": "Món thịt ba chỉ xào mướp thơm ngon, dễ làm, thích hợp cho bữa cơm gia đình.",
       "time": 30,
       "servings": 4,
-      "cost": 150000,
+      "cost_estimate": 150000,
       "kcal": 350,
       "ingredients": [
         {
@@ -63,7 +63,7 @@
       "description": "Món gà nướng mật ong thơm ngon, dễ làm, thích hợp cho các bữa tiệc cuối tuần.",
       "time": 45,
       "servings": 4,
-      "cost": 180000,
+      "cost_estimate": 180000,
       "kcal": 400,
       "ingredients": [
         {
@@ -125,7 +125,7 @@
       "description": "Món canh chua cá lóc đậm đà, chua cay rất hợp cho những ngày hè nóng bức.",
       "time": 40,
       "servings": 3,
-      "cost": 120000,
+      "cost_estimate": 120000,
       "kcal": 250,
       "ingredients": [
         {
