@@ -4,6 +4,7 @@ import RecipeCategory from "./recipeCategory";
 import RecipeSuggest from "./recipeSuggest";
 import { categoriesData } from "../tab/testData";
 import colorlibrary from "../tab/colorlibrary";
+import Header from "@/components/Header";
 
 
 export default function RecipeMain() {
@@ -35,7 +36,10 @@ const PannelHeader = ({ setIsSearch, setSearchText }) => {
   };
 
   return (
+       <View>
+            <Header title='Công thức nấu ăn' />
       <View style={styles.pannelHeader}>
+
           {headerVisible && (
               <View style={styles.header}>
                   <View style={styles.header_text}>
@@ -68,6 +72,7 @@ const PannelHeader = ({ setIsSearch, setSearchText }) => {
                   </View>
               </View>
           </View>
+      </View>
       </View>
   );
 };
