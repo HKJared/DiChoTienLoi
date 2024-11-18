@@ -56,3 +56,29 @@ export const apiClientWithToken = async (endpoint, method = 'GET', body = null) 
         throw error;
     }
 };
+
+export const apiUpload = async (formData) => {
+    try {
+        const token = getToken();
+
+        // if (!token) {
+        //     showLoginSuggest();
+        //     return
+        // }
+
+        const response = await fetch(`${API_BASE_URL}/user/upload`, {
+            method: 'POST',
+            headers: {
+                "authentication": token
+            },
+            body: formData
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error in API Upload:', error);
+        throw error;
+    }
+}
