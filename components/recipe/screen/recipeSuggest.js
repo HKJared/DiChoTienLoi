@@ -2,12 +2,16 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Image, TouchableOpacity, Text, FlatList, SafeAreaView } from "react-native";
 import colorlibrary from "../tab/colorlibrary";
 import RecipeItem from "../tab/RecipeItem";
-import { recipeData, categoriesData } from "../tab/testData";
-import CategoryList from "../tab/CategoryLayout";  // Giả sử CategoryList là component hiển thị các categories
+import CategoryList from "../tab/CategoryLayout";
 
-export default function RecipeSuggest({ isSearch, searchText }) {
+
+
+
+export default function RecipeSuggest({ isSearch, searchText, categoriesData, filteredRecipes, handleCategorySelect, navigation }) {
   const [title, setTitle] = useState('Gợi ý');
   const [showCategoryTab, setShowCategoryTab] = useState(false); // Trạng thái hiển thị tab categories
+
+
 
   const toggleCategoryTab = () => {
     setShowCategoryTab(!showCategoryTab);
@@ -20,6 +24,8 @@ export default function RecipeSuggest({ isSearch, searchText }) {
       setTitle('Gợi ý');
     }
   }, [isSearch]);
+
+
 
   return (
     <View style={styles.container}>
@@ -45,14 +51,19 @@ export default function RecipeSuggest({ isSearch, searchText }) {
           
           </View>
            
-          <CategoryList categories={categoriesData} layout="column" /> 
+          <CategoryList categories={categoriesData} layout="column" onSelectCategory={handleCategorySelect}/> 
         </View>
       )}
 
       <SafeAreaView style={styles.recipeItem}>
         <FlatList
-          data={recipeData}
-          renderItem={({ item }) => <RecipeItem data={item} />}
+          data={filteredRecipes}
+          renderItem={({ item }) =>  
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Công thức nấu ăn', {item})}
+          >    
+              <RecipeItem data={item} /> 
+          </TouchableOpacity>}
           keyExtractor={(item) => item.id}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
@@ -147,5 +158,4 @@ const styles = StyleSheet.create({
     backgroundColor:colorlibrary["--white-90"]
   }
 
-  
 });

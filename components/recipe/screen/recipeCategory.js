@@ -4,8 +4,6 @@ import colorlibrary from "../tab/colorlibrary";
 import CategoryList from "../tab/CategoryLayout";
 
 
-
-
 function Menu({ onSelect, selected }) {
   return (
     <View style={styles.MenuContainer}>
@@ -35,28 +33,31 @@ function Menu({ onSelect, selected }) {
   );
 }
 
-export default function RecipeCategory({categoriesData}) {
+export default function RecipeCategory({isSearch,  categoriesData, handleCategorySelect }) {
   const [selectedLayout, setSelectedLayout] = useState('list'); 
 
   const handleLayoutChange = (layout) => {
     setSelectedLayout(layout);  
   };
 
-
-    return (
-        <View style={styles.container}>
-            <View style= {styles.action}>
-                 <Menu onSelect={handleLayoutChange} selected={selectedLayout} />
-            </View>
-            <View style= {styles.category}>
-                <CategoryList categories={categoriesData} layout={selectedLayout}/>
-            </View>
+  return (
+    !isSearch && ( // Điều kiện isSearch được kiểm tra tại đây
+      <View style={styles.RecipeCategorycontainer}>
+        <View style={styles.action}>
+          <Menu onSelect={handleLayoutChange} selected={selectedLayout} />
         </View>
-    );
+        <View style={styles.category}>
+          <CategoryList categories={categoriesData} layout={selectedLayout} onSelectCategory={handleCategorySelect} />
+        </View>
+      </View>
+    )
+  );
 }
 
+
+
 const styles = StyleSheet.create({
-    container: {
+  RecipeCategorycontainer: {
         flex: 0,
         flexDirection:'column',
         width: '100%',

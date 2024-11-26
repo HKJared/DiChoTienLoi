@@ -20,7 +20,9 @@ export default {
     '--color-bg': '#FBFBFB',           // Màu nền
     '--color-text-primary': '#0A0E14', // Màu chữ chính
     '--color-text-secondary': '#353C4B', // Màu chữ phụ
-    '--color-shawdow': '#000000', // màu đổ bóng
+    '--color-shawdow': 'rgba(0,0,0,0.15)', // màu đổ bóng
+    '--color-active': 'rgba(0,0,0,0.0.12)',
+    '--color-default': 'rgba(0,0,0,0.44)',
   
     // Nhóm màu UI (trạng thái)
     '--color-success': '#00AF9B',     // Màu thành công

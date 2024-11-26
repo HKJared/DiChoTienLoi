@@ -3,11 +3,21 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 
 const RecipeItem = ({ data }) => {
   // Truy cập vào các thuộc tính của data
-  const { imageSource, name, userName, time, steps, rating, views } = data;
+  const {  
+    id,
+    name,
+    image_url,
+    time,
+    instructions,
+    total_views,
+    average_rate,
+    user_fullname 
+
+  } = data;
 
   return (
     <View style={styles.container}>
-      <Image source={imageSource} style={styles.image} />
+      <Image source={{ uri: image_url }} style={styles.image} />
       <View style={styles.detail}>
         <View style={styles.name}>
           <Text style={styles.text}>{name}</Text>
@@ -16,7 +26,7 @@ const RecipeItem = ({ data }) => {
         <View style={styles.info}>
           <View style={styles.userName}>
             <Image source={require('../assets/person-circle-outline.png')} style={styles.icon} />
-            <Text style={styles.infoText}>{userName}</Text>
+            <Text style={styles.infoText}>{user_fullname}</Text>
           </View>
           <View style={styles.frame1}>
             <View style={styles.time_step}>
@@ -26,21 +36,21 @@ const RecipeItem = ({ data }) => {
 
             <View style={styles.time_step}>
               <Image source={require('../assets/albums-outline.png')} style={styles.icon} />
-              <Text style={styles.infoText}>{steps}</Text>
+              <Text style={styles.infoText}>{instructions.length}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.vote}>
           <View style={styles.totalRate}>
-            <Text style={styles.rate}>{rating}</Text>
+            <Text style={styles.rate}>{average_rate}</Text>
             <Image style={styles.star} source={require('../assets/star.png')} />
           </View>
 
           <Text style={styles.separate}>|</Text>
 
           <View style={styles.totalView}>
-            <Text style={styles.view}>{views}</Text>
+            <Text style={styles.view}>{total_views}</Text>
             <Image style={styles.eyes} source={require('../assets/view.png')} />
           </View>
         </View>

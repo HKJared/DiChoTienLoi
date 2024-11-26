@@ -1,20 +1,87 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity} from "react-native";
 import RecipeCategory from "./recipeCategory";
 import RecipeSuggest from "./recipeSuggest";
-import { categoriesData } from "../tab/testData";
 import colorlibrary from "../tab/colorlibrary";
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import RecipeCard from "../tab/recipeCard";
+import { login, getRecipeCategories } from "./get_data";
+
+import recipeItemData from '../../../assets/data/recipe_items.json'
+import categoriesData from "../../../assets/data/recipe_categories.json";
 
 
-export default function RecipeMain() {
+
+const updateCategoryActivity = (categories, recipes) => {
+  return categories.map(category => {
+  
+    const hasRecipes = recipes.some(recipe => recipe.category_id === category.id);
+    return {
+      ...category,
+      active: hasRecipes 
+    };
+  });
+};
+
+
+const Stack = createStackNavigator();
+
+
+export default function Final_screen(){
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Nấu ăn" component={RecipeMain} />
+        <Stack.Screen name="Công thức nấu ăn" component={RecipeCard} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+
+function RecipeMain({navigation}) {
+
   const [isSearch, setIsSearch] = useState(false); 
   const [searchText, setSearchText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null); // Lưu trữ category đã chọn
+  const [filteredRecipes, setFilteredRecipes] = useState(recipeItemData); 
+  
+  useEffect(() => {
+    const test_fn = async () => {
+      try {
+        const username = "ky1234"; 
+        const password = "ky1234";
+  
+        console.log("Logging in...");
+        const jwt = await login(username, password);
+  
+        console.log("Fetching categories...");
+        const cateData = await getRecipeCategories(jwt);
+  
+        console.log("Categories data:", cateData);
+      } catch (error) {
+        console.error("Error in test_fn:", error.message);
+      }
+    };
+    test_fn();
+  }, []);
+  
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    const filtered = recipeItemData.filter(item => item.category_id === category.id);
+    setFilteredRecipes(filtered);
+  };
+
+  const updatedCategoriesData = updateCategoryActivity(categoriesData, recipeItemData);
 
   return (
+
       <View style={styles.container}>
           <PannelHeader setIsSearch={setIsSearch} setSearchText={setSearchText} />
-          <RecipeCategory categoriesData={categoriesData} searchText={searchText} />
-          <RecipeSuggest isSearch={isSearch} searchText={searchText} /> 
+          <RecipeCategory isSearch={isSearch} categoriesData={updatedCategoriesData} handleCategorySelect={handleCategorySelect} />
+          <RecipeSuggest isSearch={isSearch} searchText={searchText} categoriesData={updatedCategoriesData} filteredRecipes={filteredRecipes} handleCategorySelect={handleCategorySelect}  navigation={navigation}/> 
       </View>
   );
 }

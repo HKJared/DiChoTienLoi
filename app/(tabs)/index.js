@@ -1,23 +1,18 @@
+import '../../gesture-handler';
 import React from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
-import RecipeMain from '../../components/recipe/screeen/RecipeMain';
-
-
-
-const infoOverView = ['22 phút','3-4 người', '80.000đ', '15 cal'];
+import { View, StyleSheet } from 'react-native';
+import RecipeMain from '../../components/recipe/screen/RecipeMain';
 
 export default function App() {
   return (
     <View style={styles.container}>
-        <RecipeMain/>
+     <RecipeMain/>
     </View>
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1
   },
- 
 });
