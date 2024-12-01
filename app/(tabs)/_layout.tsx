@@ -1,6 +1,5 @@
 import { Tabs } from "expo-router";
 import React from "react";
-import { Image } from "react-native";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -41,41 +40,41 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-          name="cooking"
-          options={{
-            title: "Cooking",
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon
-                name={focused ? "pizza" : "pizza-outline"}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="family"
-          options={{
-            title: "Family",
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon
-                name={focused ? "people" : "people-outline"}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="user"
-          options={{
-            title: "Cá nhân",
-            tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon
-                name={focused ? "person" : "person-outline"}
-                color={color}
-              />
-            ),
-          }}
-        />
+        name="cooking"
+        options={{
+          title: "Cooking",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "pizza" : "pizza-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="family"
+        options={{
+          title: "Family",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "people" : "people-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="user"
+        options={{
+          title: "Cá nhân",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "person" : "person-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
