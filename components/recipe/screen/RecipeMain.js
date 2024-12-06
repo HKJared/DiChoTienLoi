@@ -1,144 +1,198 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity} from "react-native";
+import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity, Alert} from "react-native";
 import RecipeCategory from "./recipeCategory";
 import RecipeSuggest from "./recipeSuggest";
 import colorlibrary from "../tab/colorlibrary";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import RecipeCard from "../tab/recipeCard";
-import { login, getRecipeCategories } from "./get_data";
+import Header from "./header";
+import CreateRecipe from "../tab/createRecipe";
+import  UpdateRecipe from "../tab/UpdateRecipe";
+import MyRecipe from './MyRecipe'
 
-import recipeItemData from '../../../assets/data/recipe_items.json'
-import categoriesData from "../../../assets/data/recipe_categories.json";
-
-
-
-const updateCategoryActivity = (categories, recipes) => {
-  return categories.map(category => {
-  
-    const hasRecipes = recipes.some(recipe => recipe.category_id === category.id);
-    return {
-      ...category,
-      active: hasRecipes 
-    };
-  });
-};
+import { getToken, getRecipeCategories, getRecipe, searchRecipe } from "./get_data";
 
 
 const Stack = createStackNavigator();
 
-
 export default function Final_screen(){
   return (
+ 
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Nấu ăn" component={RecipeMain} />
-        <Stack.Screen name="Công thức nấu ăn" component={RecipeCard} />
-      </Stack.Navigator>
+      
+        <Stack.Navigator
+            screenOptions={({ route }) => ({
+              header: () => <Header title={route.name} />,
+            })}
+          >
+            <Stack.Screen name="Nấu ăn" component={RecipeMain} />
+            <Stack.Screen name="Công thức nấu ăn" component={RecipeCard} />
+            <Stack.Screen name="Tạo công thức nấu ăn" component={CreateRecipe} />
+            <Stack.Screen name="Công thức của tôi" component={MyRecipe} />
+            <Stack.Screen name="Chỉnh sửa công thức" component={UpdateRecipe} />
+        </Stack.Navigator>
     </NavigationContainer>
+  
   );
 }
-
 
 function RecipeMain({navigation}) {
 
   const [isSearch, setIsSearch] = useState(false); 
   const [searchText, setSearchText] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(null); // Lưu trữ category đã chọn
-  const [filteredRecipes, setFilteredRecipes] = useState(recipeItemData); 
-  
-  useEffect(() => {
-    const test_fn = async () => {
-      try {
-        const username = "ky1234"; 
-        const password = "ky1234";
-  
-        console.log("Logging in...");
-        const jwt = await login(username, password);
-  
-        console.log("Fetching categories...");
-        const cateData = await getRecipeCategories(jwt);
-  
-        console.log("Categories data:", cateData);
-      } catch (error) {
-        console.error("Error in test_fn:", error.message);
-      }
-    };
-    test_fn();
-  }, []);
+  const [selectedCategory, setSelectedCategory] = useState(null); 
+  const [filteredRecipes, setFilteredRecipes] = useState(null); 
+  const [categoriesData, setCategoriesData] = useState(null)
+  const [myInfo, setMyInfo] = useState()
   
 
-  const handleCategorySelect = (category) => {
+  const handleCategorySelect = async (category) => {
     setSelectedCategory(category);
-    const filtered = recipeItemData.filter(item => item.category_id === category.id);
-    setFilteredRecipes(filtered);
+    const recipeFilterData = await getRecipe(category.id);
+    setFilteredRecipes(recipeFilterData['recipes']);
   };
 
-  const updatedCategoriesData = updateCategoryActivity(categoriesData, recipeItemData);
+  const getFullData = async () => {
+    try {
+      const jwt = await getToken();
+      if (!jwt) {
+        console.error("Failed to get JWT");
+        return;
+      }
+  
+      console.log("Fetching categories...");
+      const categoriesList = await getRecipeCategories(jwt);
+  
+      const recipesPromises = categoriesList.map(async (category) => {
+        const categoryDetail = await getRecipe(category.id);
+        if (categoryDetail.totalCount > 0) {
+          category.active = true;
+          return categoryDetail.recipes;
+        } else {
+          category.active = false;
+          return [];
+        }
+      });
+  
+      const allRecipes = (await Promise.all(recipesPromises)).flat();
+      setCategoriesData(categoriesList);
+      setFilteredRecipes(allRecipes);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    getFullData();
+    const unsubscribe = navigation.addListener('focus', () => {
+      getFullData();
+    });
+
+    return () => unsubscribe();
+  }, [navigation]);
+
+
+  useEffect(() => {
+    const searchRecipes = async () => {
+      if (isSearch && searchText.trim() !== "") {
+        try {
+          const recipeSearchData = await searchRecipe(searchText, 1, 20);
+          setFilteredRecipes(recipeSearchData['recipes']); 
+        } catch (error) {
+          console.error("Error in:", error.message);
+        }
+      }
+    };
+    print('isSearch in useEffect:', isSearch, searchText)
+    searchRecipes();
+  }, [isSearch, searchText]);
+  
+
 
   return (
-
       <View style={styles.container}>
-          <PannelHeader setIsSearch={setIsSearch} setSearchText={setSearchText} />
-          <RecipeCategory isSearch={isSearch} categoriesData={updatedCategoriesData} handleCategorySelect={handleCategorySelect} />
-          <RecipeSuggest isSearch={isSearch} searchText={searchText} categoriesData={updatedCategoriesData} filteredRecipes={filteredRecipes} handleCategorySelect={handleCategorySelect}  navigation={navigation}/> 
+          <PannelHeader setIsSearch={setIsSearch} setSearchText={setSearchText}/>
+          <RecipeCategory 
+          isSearch={isSearch} 
+          categoriesData={categoriesData} 
+          handleCategorySelect={handleCategorySelect} 
+          />
+          <RecipeSuggest 
+          isSearch={isSearch} 
+          searchText={searchText} 
+          categoriesData={categoriesData} 
+          filteredRecipes={filteredRecipes} 
+          handleCategorySelect={handleCategorySelect}  
+          navigation={navigation}/> 
+
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate('Công thức của tôi', {categoriesData, myInfo})}
+          >
+            <View style={styles.addIconContainer}>
+              <Text style={styles.addIcon}>+</Text>
+            </View>
+          </TouchableOpacity>
       </View>
   );
 }
 
-const PannelHeader = ({ setIsSearch, setSearchText }) => {
+const PannelHeader = ({ setIsSearch, setSearchText, navigation }) => {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [localSearchText, setLocalSearchText] = useState("");
 
   const search = () => {
-      if (localSearchText.trim() !== "") { 
-          setHeaderVisible(false); 
-          setIsSearch(true);  
-          setSearchText(localSearchText); 
-      }
-      else {
-        alert('Please type the keyword you want to search for !');
-      }
+    if (localSearchText.trim() !== "") {
+      setHeaderVisible(false);  
+      setIsSearch(true); 
+      setSearchText(localSearchText); 
+    } else {
+      Alert.alert('Warning','Please type the keyword you want to search for!');
+    }
   };
 
   return (
-      <View style={styles.pannelHeader}>
-          {headerVisible && (
-              <View style={styles.header}>
-                  <View style={styles.header_text}>
-                      <Text style={styles.greeting}>Xin chào, Tú!</Text>
-                      <Text style={styles.subtitle}>Hôm nay bạn muốn ăn gì?</Text>
-                  </View>
-                  <Image 
-                      source={require('../assets/chef-hat_svgrepo.com.png')} 
-                      style={styles.chef_icon}
-                  />
-              </View>
-          )}
-
-          <View style={styles.inputContainer}>
-              <View style={styles.boxInput}>
-                  <TextInput 
-                      style={styles.input}
-                      placeholderTextColor={colorlibrary['--white-60']}
-                      placeholder="Tên món ăn"
-                      value={localSearchText} 
-                      onChangeText={setLocalSearchText} 
-                  />
-                  <View style={styles.searchContainer}>
-                      <TouchableOpacity onPress={search}>
-                          <Image 
-                              style={styles.searchIcon}
-                              source={require('../assets/search-outline.png')}
-                          />
-                      </TouchableOpacity>
-                  </View>
-              </View>
+    <View style={styles.pannelHeader}>
+      {headerVisible && (
+        <View style={styles.header}>
+          <View style={styles.header_text}>
+            <Text style={styles.greeting}>Xin chào !</Text>
+            <Text style={styles.subtitle}>Hôm nay bạn muốn ăn gì?</Text>
           </View>
+          <Image 
+            source={require('../assets/chef-hat_svgrepo.com.png')} 
+            style={styles.chef_icon}
+          />
+        </View>
+      )}
+
+      <View style={styles.inputContainer}>
+        <View style={styles.boxInput}>
+          <TextInput 
+            style={styles.input}
+            placeholderTextColor={colorlibrary['--white-60']}
+            placeholder="Tên món ăn"
+            value={localSearchText} 
+            onChangeText={setLocalSearchText} 
+            keyboardType="default" 
+            autoCapitalize="none"   
+            multiline={false}    
+          />
+          <View style={styles.searchContainer}>
+            <TouchableOpacity  onPress={search}>
+              <Image 
+                style={styles.searchIcon}
+                source={require('../assets/search-outline.png')}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
       </View>
+    </View>
   );
 };
-
 
 
 const styles = StyleSheet.create({
@@ -260,6 +314,30 @@ const styles = StyleSheet.create({
       searchIcon: {
         width: 26,
         height: 26,
-      }
+      },
+      addButton: {
+        position: 'absolute',
+        bottom: 32,
+        right: 32,
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: colorlibrary["--color-blue-bg"],
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: colorlibrary["--color-shawdow"],
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
+      },
+      addIconContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      addIcon: {
+        fontSize: 24,
+        color: '#fff',
+      },
  
 });

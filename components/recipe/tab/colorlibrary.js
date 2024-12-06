@@ -28,5 +28,10 @@ export default {
     '--color-success': '#00AF9B',     // Màu thành công
     '--color-warning': '#FFB800',     // Màu cảnh báo
     '--color-danger': '#F52D55',      // Màu lỗi
+    '--color-removeText': 'd9534f',
+    '--color-removeButton': '#f8d7da',
+    '--color-bg2': '#E6E7EA',
+    '--color-infotext': '#4C5467',
+
   };
   

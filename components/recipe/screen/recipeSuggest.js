@@ -7,11 +7,16 @@ import CategoryList from "../tab/CategoryLayout";
 
 
 
-export default function RecipeSuggest({ isSearch, searchText, categoriesData, filteredRecipes, handleCategorySelect, navigation }) {
+export default function RecipeSuggest({ 
+                                        isSearch, 
+                                        searchText, 
+                                        categoriesData, 
+                                        filteredRecipes, 
+                                        handleCategorySelect, 
+                                        navigation }) {
+                                          
   const [title, setTitle] = useState('Gợi ý');
   const [showCategoryTab, setShowCategoryTab] = useState(false); // Trạng thái hiển thị tab categories
-
-
 
   const toggleCategoryTab = () => {
     setShowCategoryTab(!showCategoryTab);
@@ -23,7 +28,7 @@ export default function RecipeSuggest({ isSearch, searchText, categoriesData, fi
     } else {
       setTitle('Gợi ý');
     }
-  }, [isSearch]);
+  }, [searchText]);
 
 
 
@@ -51,33 +56,35 @@ export default function RecipeSuggest({ isSearch, searchText, categoriesData, fi
           
           </View>
            
-          <CategoryList categories={categoriesData} layout="column" onSelectCategory={handleCategorySelect}/> 
+          <CategoryList categoriesData ={categoriesData} layout="column" onSelectCategory={handleCategorySelect}/> 
         </View>
       )}
 
-      <SafeAreaView style={styles.recipeItem}>
+      <View style={styles.recipeItem}>
         <FlatList
           data={filteredRecipes}
           renderItem={({ item }) =>  
           <TouchableOpacity
             onPress={() => navigation.navigate('Công thức nấu ăn', {item})}
           >    
-              <RecipeItem data={item} /> 
+            <RecipeItem data={item} /> 
           </TouchableOpacity>}
+          
           keyExtractor={(item) => item.id}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.listContainer}
         />
-      </SafeAreaView>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0,
+    flex: 1,
     width: '100%',
+    height: "100%",
     flexDirection: 'column',
     justifyContent: 'flex-start',
     gap: 10,
@@ -103,14 +110,15 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   recipeItem: {
-    flex: 0,
+    flex: 1,
+    height: "100%"
   },
   columnWrapper: {
     justifyContent: 'space-between'
   },
   listContainer: {
     paddingHorizontal: 0,
-    gap: 10,
+    gap: 20,
   },
   keyWordIcon: {
     width: 18,
@@ -156,6 +164,8 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 4,
     backgroundColor:colorlibrary["--white-90"]
-  }
+  },
+
+
 
 });

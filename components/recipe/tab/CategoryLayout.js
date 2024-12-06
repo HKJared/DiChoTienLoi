@@ -3,7 +3,7 @@ import { StyleSheet, FlatList, View, TouchableOpacity, ImageBackground, Text } f
 import colorlibrary from './colorlibrary';
 
 
-export default function CategoryList({ categories, layout, onSelectCategory }) {
+export default function CategoryList({ categoriesData, layout, onSelectCategory }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => onSelectCategory(item)}>
       <Category 
@@ -33,7 +33,7 @@ export default function CategoryList({ categories, layout, onSelectCategory }) {
 
   return (
     <FlatList
-      data={categories}
+      data={categoriesData}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
       numColumns={numColumns}
@@ -47,10 +47,11 @@ export default function CategoryList({ categories, layout, onSelectCategory }) {
 }
 
 function Category({id, name, image_url, active }) {
+
   return (
     <View style={styles.category_container}>
       <ImageBackground 
-        source={{ uri: image_url }} 
+        source={{ headers: { 'Accept': 'image/*'}, uri: image_url}} 
         style={styles.background}
       >
         {!active &&  <View 
@@ -59,6 +60,7 @@ function Category({id, name, image_url, active }) {
             { backgroundColor: active ? colorlibrary["--color-active"] : colorlibrary["--color-default"] }
           ]}
         />}
+
         <Text style={styles.text}>{name}</Text>
       </ImageBackground>
     </View>
@@ -92,9 +94,10 @@ const styles = StyleSheet.create({
   },
   background: {
     width: '100%',
-    height: '100%',
+    height: '200%',
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   overlay: {
     position: 'absolute',

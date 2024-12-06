@@ -47,7 +47,7 @@ export default function RecipeCategory({isSearch,  categoriesData, handleCategor
           <Menu onSelect={handleLayoutChange} selected={selectedLayout} />
         </View>
         <View style={styles.category}>
-          <CategoryList categories={categoriesData} layout={selectedLayout} onSelectCategory={handleCategorySelect} />
+          <CategoryList categoriesData={categoriesData} layout={selectedLayout} onSelectCategory={handleCategorySelect} />
         </View>
       </View>
     )

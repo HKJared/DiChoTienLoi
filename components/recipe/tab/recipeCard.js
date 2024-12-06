@@ -1,11 +1,49 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import colorlibrary from './colorlibrary';
 import Making from './Making';
+import {getToken, getRcipeDetail} from '../screen/get_data';
 
-export default function RecipeCard({ route }) {
-  const { item } = route.params; 
+
+export default function RecipeCard({ route, navigation }) {
+
+  const [item, setItem] = useState(null)
+  const { item: item_param } = route.params; 
+
+  const fetchRecipeDetail = async () => {
+    try {
+      const jwt = await getToken(); 
+      if (jwt) {
+        console.log("Fetching recipeDetail...");
+        const { 'recipe': responseData } = await getRcipeDetail(jwt, item_param.id); 
+        setItem(responseData); 
+      } else {
+        console.error("Failed to get JWT");
+      }
+    } catch (error) {
+      console.error("Error in:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecipeDetail();
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchRecipeDetail();
+    });
+    return () => unsubscribe();
+  }, [item_param]);
+
+
+  if (!item) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );  
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.card}>
@@ -19,17 +57,20 @@ export default function RecipeCard({ route }) {
         <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.title}>{item.name}</Text>
-            <Text style={styles.category}>{item.category}</Text>
+            <Text style={styles.category}>{item.category_name}</Text>
           </View>
 
-          <Vote rateNumber={item.average_rate} viewNumber={`${item.total_views}k`} />
+          <Vote rateNumber={item.total_saves} viewNumber={`${item.total_views}k`} />
 
           <Text style={styles.description}>{item.description}</Text>
 
           <View style={styles.info}>
             <OverViewItem iconPath={require('../assets/infoTime.png')} info={item.time+' phút'} />
             <OverViewItem iconPath={require('../assets/infoNumperson.png')} info={item.serving+' người'} />
-            <OverViewItem iconPath={require('../assets/infoCost.png')} info={item.cost_estimate+'đ'} />
+            <OverViewItem 
+              iconPath={require('../assets/infoCost.png')} 
+              info={`${Number(item.cost_estimate).toLocaleString('vi-VN')}đ`} 
+            />
             <OverViewItem iconPath={require('../assets/infoCalo.png')} info={item.kcal +' kcal'} />
           </View>
 
@@ -45,10 +86,10 @@ export default function RecipeCard({ route }) {
       </View>
 
       <IngredientList
-          ingredients={item.ingredients}
+          ingredients={JSON.parse(item.ingredients)}
       />
 
-      <Making instructions={item.instructions}/>
+      <Making instructions={JSON.parse(item.instructions)}/>
     </ScrollView>
   );
 }
@@ -113,6 +154,18 @@ function OverViewItem({iconPath, info}) {
 
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    flexDirection: 'column',  
+    justifyContent: 'center', 
+    alignItems: 'center',    
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: 'gray',
+  },
+
 
   container: {
     flex: 1,
@@ -196,6 +249,7 @@ const styles = StyleSheet.create({
   info: {
     width: '100%',
     flex: 0,
+    gap: 6,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
@@ -329,7 +383,7 @@ const styles = StyleSheet.create({
 
   
   infoItem: {
-    flex: 0,
+    flex: 1,
     // width: 56,
     height: 56,
     flexDirection: 'column',

@@ -1,18 +1,20 @@
-import '../../gesture-handler';
+import 'react-native-gesture-handler'; // Đảm bảo import gesture-handler đúng cách nếu cần
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import RecipeMain from '../../components/recipe/screen/RecipeMain';
-
+import { View, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import Final_screen from '../../components/recipe/screen/RecipeMain';
+import Header from '../../components/recipe/screen/header';
 export default function App() {
   return (
-    <View style={styles.container}>
-     <RecipeMain/>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Final_screen/>
+
+    </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
+
   container: {
-    flex: 1
+    marginTop: 34,
+    flex: 1, 
   },
 });

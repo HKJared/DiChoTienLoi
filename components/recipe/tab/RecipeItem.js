@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import colorlibrary from './colorlibrary';
 
 const RecipeItem = ({ data }) => {
-  // Truy cập vào các thuộc tính của data
+
   const {  
     id,
     name,
     image_url,
     time,
-    instructions,
+    serving,
     total_views,
-    average_rate,
+    total_saves,
     user_fullname 
 
   } = data;
@@ -28,6 +29,7 @@ const RecipeItem = ({ data }) => {
             <Image source={require('../assets/person-circle-outline.png')} style={styles.icon} />
             <Text style={styles.infoText}>{user_fullname}</Text>
           </View>
+          
           <View style={styles.frame1}>
             <View style={styles.time_step}>
               <Image source={require('../assets/time-outline.png')} style={styles.icon} />
@@ -36,14 +38,14 @@ const RecipeItem = ({ data }) => {
 
             <View style={styles.time_step}>
               <Image source={require('../assets/albums-outline.png')} style={styles.icon} />
-              <Text style={styles.infoText}>{instructions.length}</Text>
+              <Text style={styles.infoText}>{serving}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.vote}>
           <View style={styles.totalRate}>
-            <Text style={styles.rate}>{average_rate}</Text>
+            <Text style={styles.rate}>{total_saves}</Text>
             <Image style={styles.star} source={require('../assets/star.png')} />
           </View>
 
@@ -62,8 +64,8 @@ const RecipeItem = ({ data }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 175,
-    height: 201,
+    width: '100%',
+    height: 200,
     backgroundColor: 'transparent',
     flexDirection: 'column',
     alignItems: 'center',
@@ -102,39 +104,41 @@ const styles = StyleSheet.create({
   },
   info: {
     height: 16,
-    width: 180,
+    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     backgroundColor: 'transparent',
     gap: 10,
   },
   userName: {
-    width: 64,
+    width: '45%',
     height: 16,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    backgroundColor: '#E6E7EA',
+    backgroundColor: colorlibrary['--color-bg2'],
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 4,
   },
   frame1: {
-    width: 100,
+    width: '50%',
     height: 16,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    backgroundColor: '#E6E7EA',
+    backgroundColor: colorlibrary['--color-bg2'],
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
+    
   },
   time_step: {
     height: 8,
     flexDirection: 'row',
     alignItems: 'center',
+
     gap: 2,
   },
   icon: {
@@ -143,7 +147,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   infoText: {
-    color: '#4C5467',
+    color: colorlibrary['--color-infotext'],
     fontFamily: 'Roboto',
     fontSize: 8,
     lineHeight: 8,
@@ -168,9 +172,9 @@ const styles = StyleSheet.create({
   },
   rate: {
     fontFamily: 'Roboto',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '400',
-    color: '#000000',
+    color: colorlibrary['--black-100'],
     letterSpacing: 0,
   },
   star: {
@@ -198,12 +202,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     fontSize: 10,
     fontWeight: '400',
-    color: '#000000',
+    color: colorlibrary['--black-100'],
     letterSpacing: 0,
   },
   eyes: {
-    width: 10,
-    height: 10,
+    width: 12,
+    height: 12,
   },
 });
 
