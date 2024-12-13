@@ -77,6 +77,7 @@ function RecipeMain({navigation}) {
   
       const allRecipes = (await Promise.all(recipesPromises)).flat();
       setCategoriesData(categoriesList);
+      console.log('categories list:', categoriesList)
       setFilteredRecipes(allRecipes);
     } catch (error) {
       console.error("Error:", error.message);

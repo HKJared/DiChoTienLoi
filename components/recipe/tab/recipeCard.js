@@ -86,10 +86,10 @@ export default function RecipeCard({ route, navigation }) {
       </View>
 
       <IngredientList
-          ingredients={JSON.parse(item.ingredients)}
+          ingredients={item.ingredients}
       />
 
-      <Making instructions={JSON.parse(item.instructions)}/>
+      <Making instructions={item.instructions}/>
     </ScrollView>
   );
 }

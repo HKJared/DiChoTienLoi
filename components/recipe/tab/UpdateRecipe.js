@@ -42,8 +42,8 @@ export default  UpdateRecipe = ({ route , navigation }) => {
     if (item) {
       setNewData({
         ...item,  
-        ingredients: item.ingredients ? JSON.parse(item.ingredients) : [],
-        instructions: item.instructions ? JSON.parse(item.instructions) : [],
+        // ingredients: item.ingredients ? JSON.parse(item.ingredients) : [],
+        // instructions: item.instructions ? JSON.parse(item.instructions) : [],
         cost_estimate: parseInt(item.cost_estimate) ? parseInt(item.cost_estimate) : 0,
       });
     }
@@ -63,14 +63,6 @@ export default  UpdateRecipe = ({ route , navigation }) => {
     getmkplaceItem();
   }, []);
 
-  
-
-  const handleAddIngredient = () => {
-    setNewData((prev) => ({
-      ...prev,
-      ingredients: [...prev.ingredients, { marketplace_item_id: '', name: '', quantity: '' }],
-    }));
-  };
 
   const handleAddInstruction = () => {
     setNewData((prev) => {
@@ -150,12 +142,11 @@ export default  UpdateRecipe = ({ route , navigation }) => {
         console.log('Failed to get JWT');
         return;
       }
-  
+
       const result = await updatedData(jwt, item.id, newData);
-  
+
       if (result.status === 200) {
        
-
         const storedData = await AsyncStorage.getItem(MY_RECIPE_KEY);
         console.log('storeData',storedData)
 
@@ -165,8 +156,6 @@ export default  UpdateRecipe = ({ route , navigation }) => {
 
         const formattedData = {
           ...newData,
-          ingredients: JSON.stringify(newData.ingredients), 
-          instructions: JSON.stringify(newData.instructions),
         };
 
         const updatedData = parsedData.map((recipe_item) =>

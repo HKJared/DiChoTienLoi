@@ -1,6 +1,6 @@
 import axios from "axios";
 // const axios = require('axios');
-const base_url = 'http://192.168.1.104:3000/api'
+const base_url = 'http://192.168.1.104:8888/api'
 const username = 'ky1234';
 const password = 'ky1234';
 
@@ -213,8 +213,9 @@ const deleteRecipe = async (jwt, recipeId) =>{
 
 // (async () => {
 //   const jwt = await getToken();
-//   const recipeDetail = await getMarketplaceitem();
-//   console.log('marketplaceitem', recipeDetail)
+//   const recipeCategoryData = await getRecipeCategories(jwt);
+//   console.log('recipeCategoryData', recipeCategoryData)
 // })();
+
 
 export {getToken, getRecipeCategories, getRecipe, getRcipeDetail, searchRecipe, updatedData, CreateRecipeDetail, getMarketplaceitem, deleteRecipe} 

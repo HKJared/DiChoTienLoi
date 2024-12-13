@@ -140,18 +140,14 @@ export default  CreateRecipe = ({ route, navigation }) => {
   const handleCreateRecipe = async () => {
     const validationError = validateData();
     if (validationError) return Alert.alert('Error', validationError);
-  
+    
     try {
       const jwt = await getToken();
       if (!jwt) return console.log('Failed to get JWT');
-  
+      
       const response = await CreateRecipeDetail(jwt, newData);
+      console.log('data::::',response.data.new_recipe)
       if (response.status === 200) {
-        const newRecipeJson = {
-          ...response.data.new_recipe,
-          ingredients: JSON.parse(response.data.new_recipe.ingredients),
-          instructions: JSON.parse(response.data.new_recipe.instructions),
-        };
         console.log('new recipe:', response.data.new_recipe)
         await storeRecipeData(MY_RECIPE_KEY, response.data.new_recipe);
         Alert.alert('Success', `Recipe ${newData.name} created successfully!`);
