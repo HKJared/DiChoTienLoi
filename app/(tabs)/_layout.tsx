@@ -66,7 +66,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="user"
         options={{
-          title: "Cá nhân",
+          title: "User",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "person" : "person-outline"}

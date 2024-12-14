@@ -1,7 +1,7 @@
 import { saveToken, removeToken } from "../services/storageService";
 
 //ae dùng thì đổi sang cái localhost nhé
-const API_BASE_URL = "http://192.168.1.169:4000/api";
+const API_BASE_URL = "http://192.168.1.10:4000/api";
 
 export const apiRegister = async (username, password) => {
   try {
