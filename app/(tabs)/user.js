@@ -33,7 +33,10 @@ export default function TabUserScreen() {
 
   return (
     <View style={styles.container}>
-      {isLoggedIn ? <ProfileScreen /> : null}
+      {isLoggedIn ? <>
+          <Header title="Trang cá nhân" />
+          <ProfileScreen />
+        </> : null}
     </View>
   );
 }
