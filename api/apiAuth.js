@@ -1,11 +1,11 @@
 import { saveToken, removeToken } from "../services/storageService";
-
+import BASE_HOST_URL from "./baseHostUrl";
 //ae dùng thì đổi sang cái localhost nhé
-const API_BASE_URL = "http://192.168.1.10:4000/api";
+// const BASE_HOST_URL = "http://192.168.1.6:8888/api";
 
 export const apiRegister = async (username, password) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/register`, {
+    const response = await fetch(`${BASE_HOST_URL}api/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,7 +30,7 @@ export const apiRegister = async (username, password) => {
 
 export const apiLogin = async (username, password) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/login`, {
+    const response = await fetch(`${BASE_HOST_URL}api/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
