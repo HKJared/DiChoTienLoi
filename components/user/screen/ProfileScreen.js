@@ -288,11 +288,16 @@ export default function ProfileScreen() {
 
       {/* Change Password Button */}
       <Text style={styles.label}></Text>
+
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Cập nhật thông tin</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.saveButton}
         onPress={() => setShowModal(true)}
       >
-        <Text style={styles.saveButtonText}>Change Password</Text>
+        <Text style={styles.saveButtonText}>Đổi mật khẩu</Text>
       </TouchableOpacity>
 
       {/* Modal to change password */}
@@ -304,7 +309,7 @@ export default function ProfileScreen() {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Change Password</Text>
+            <Text style={styles.modalTitle}>Đổi mật khẩu</Text>
 
             <TextInput
               style={styles.input}
@@ -325,25 +330,21 @@ export default function ProfileScreen() {
               style={styles.saveButton}
               onPress={handleChangePassword}
             >
-              <Text style={styles.saveButtonText}>Save</Text>
+              <Text style={styles.saveButtonText}>Đổi mật khẩu</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.cancelButton}
               onPress={() => setShowModal(false)}
             >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+              <Text style={styles.cancelButtonText}>Hủy</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Save Changes</Text>
-      </TouchableOpacity>
-
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Log Out</Text>
+        <Text style={styles.logoutButtonText}>Đăng xuất</Text>
       </TouchableOpacity>
     </ScrollView>
   );

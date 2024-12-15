@@ -1,5 +1,5 @@
-const API_BASE_URL = "http://192.168.1.10:4000/api/user";
 import { getToken } from "../services/storageService";
+import BASE_HOST_URL from "./baseHostUrl";
 
 // Hàm gọi API lấy thông tin người dùng
 export const apiGetUserInfo = async () => {
@@ -9,7 +9,7 @@ export const apiGetUserInfo = async () => {
       throw new Error("No token found. Please log in again.");
     }
 
-    const response = await fetch(`${API_BASE_URL}/info`, {
+    const response = await fetch(`${BASE_HOST_URL}api/user/info`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const apiGetUserInfo = async () => {
 export const apiChangePassword = async (oldPassword, newPassword) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${API_BASE_URL}/change-password`, {
+    const response = await fetch(`${BASE_HOST_URL}/api/change-password`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -63,7 +63,7 @@ export const apiChangePassword = async (oldPassword, newPassword) => {
 export const apiChangeAvatar = async (avatarUrl) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${API_BASE_URL}/change-avatar`, {
+    const response = await fetch(`${BASE_HOST_URL}api/change-avatar`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export const apiChangeAvatar = async (avatarUrl) => {
 export const apiUpdateUserInfo = async (userInfo) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${API_BASE_URL}/update-info`, {
+    const response = await fetch(`${BASE_HOST_URL}api/update-info`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +117,7 @@ export const apiUpdateUserInfo = async (userInfo) => {
 export const apiUploadFile = async (formData) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${API_BASE_URL}/upload`, {
+    const response = await fetch(`${BASE_HOST_URL}/upload`, {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
