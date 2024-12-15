@@ -14,7 +14,13 @@ export default function App() {
 const styles = StyleSheet.create({
 
   container: {
+<<<<<<< HEAD
     marginTop: 34,
     flex: 1, 
   },
+=======
+    flex: 1,
+  },
+
+>>>>>>> main
 });

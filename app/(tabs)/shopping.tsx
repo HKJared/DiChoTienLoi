@@ -30,7 +30,7 @@ export default function ShoppingScreen() {
       {isScheduleMode ? (
         <HeaderScheduleShopping onCreateNewSchedule={handleCreateNewSchedule} />
       ) : (
-        <Header />
+        <Header title='Mua sắm' />
       )}
       <View style={styles.containerShoppingCalender}>
         {!isScheduleMode ? (

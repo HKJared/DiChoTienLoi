@@ -8,8 +8,10 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { colors } from "@/styles/variable";
-import React, { useState } from "react";
-import { Calendar } from "react-native-calendars"; 
+
+import React, { useState, useEffect } from "react";
+import { Calendar } from "react-native-calendars"; // Thư viện lịch
+
 import shoppingScheduleStyle from "@/styles/Shopping/shoppingSchedule";
 
 const getFormattedDate = (date: Date) => {
@@ -29,8 +31,13 @@ const ShoppingScheduleCalender = ({
   const [showCalendar, setShowCalendar] = useState(false);
 
   const handleDayPress = (day: any) => {
-    onDateChange(day.dateString);
-    setShowCalendar(false);
+    if (day && day.dateString) {
+      onDateChange(day.dateString);
+      setShowCalendar(false);
+    } else {
+      // Handle the case when day or day.dateString is not available
+      console.error("Invalid day object", day);
+    }
   };
 
   // Chuyển đổi selectedDate sang đối tượng Date nếu có
@@ -112,6 +119,7 @@ const ShoppingScheduleCalender = ({
   };
 
   const [visibleUnitIndex, setVisibleUnitIndex] = useState<number | null>(null);
+
   const items = Array.from({ length: 10 }, (_, index) => ({
     id: index + 1,
     name: `Gạo ${index + 1}`,
@@ -124,7 +132,7 @@ const ShoppingScheduleCalender = ({
     type: string;
     image: any;
   }
-
+  // Gạo
   const [inputTextShopping, setInputTextShopping] = useState<
     Record<number, string>
   >(items.reduce((acc, item) => ({ ...acc, [item.id]: "" }), {}));
@@ -171,18 +179,24 @@ const ShoppingScheduleCalender = ({
       {showCalendar && (
         <View style={shoppingScheduleStyle.calendarContainer}>
           <Calendar
-            current={currentDate}
+            // Sử dụng selectedDate nếu đã chọn, nếu không thì dùng currentDate
+            current={selectedDate || currentDate}
             onDayPress={handleDayPress}
-            markedDates={{
-              [selectedDate || ""]: {
-                selected: true,
-                selectedColor: "blue",
-                selectedTextColor: "white",
-              },
-            }}
+            markedDates={
+              selectedDate
+                ? {
+                    [selectedDate]: {
+                      selected: true,
+                      selectedColor: "blue",
+                      selectedTextColor: "white",
+                    },
+                  }
+                : {}
+            }
           />
         </View>
       )}
+
       {/* Search */}
       <View style={shoppingScheduleStyle.containerSearch}>
         {/* Thanh search */}
