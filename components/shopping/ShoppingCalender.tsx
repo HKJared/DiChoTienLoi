@@ -9,8 +9,8 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import shoppingCalenderStyle from "@/styles/Shopping/shopping";
 import { colors } from "@/styles/variable";
-import { getMarketCategories } from "@/controllers/marketplace-categories";
 // Hàm lấy các ngày trong tháng hiện tại
+import { getMarketCategories } from "@/api/shopping/apiMarketplaceCategories";
 const getDaysInCurrentMonth = () => {
   const today = new Date();
   const currentYear = today.getFullYear();
