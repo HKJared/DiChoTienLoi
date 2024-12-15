@@ -1,0 +1,47 @@
+[
+    {
+      "id": 1,
+      "name": "Thực Phẩm Tươi Sống",
+      "image_url": "https://example.com/images/thuc-pham-tuoi-song.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Thực Phẩm Đông Lạnh",
+      "image_url": "https://example.com/images/thuc-pham-dong-lanh.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Nhu Yếu Phẩm",
+      "image_url": "https://example.com/images/nhu-yeu-pham.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Dụng Cụ Nhà Bếp",
+      "image_url": "https://example.com/images/dung-cu-nha-bep.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Hoa Quả",
+      "image_url": "https://example.com/images/hoa-qua.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Đồ Uống",
+      "image_url": "https://example.com/images/do-uong.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Thực Phẩm Chế Biến Sẵn",
+      "image_url": "https://example.com/images/thuc-pham-che-bien-san.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Các Loại Hạt & Ngũ Cốc",
+      "image_url": "https://example.com/images/hat-ngu-coc.jpg"
+    },
+    {
+      "id": 9,
+      "name": "Đồ Dùng Gia Đình",
+      "image_url": "https://example.com/images/do-dung-gia-dinh.jpg"
+    }
+]

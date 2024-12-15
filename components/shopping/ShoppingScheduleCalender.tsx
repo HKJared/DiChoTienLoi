@@ -8,8 +8,10 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { colors } from "@/styles/variable";
+
 import React, { useState, useEffect } from "react";
 import { Calendar } from "react-native-calendars"; // Thư viện lịch
+
 import shoppingScheduleStyle from "@/styles/Shopping/shoppingSchedule";
 
 const getFormattedDate = (date: Date) => {

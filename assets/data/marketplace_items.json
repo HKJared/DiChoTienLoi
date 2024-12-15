@@ -1,0 +1,258 @@
+[
+    {
+      "id": 1,
+      "category_id": 1,
+      "name": "Thịt Ba Chỉ Lợn",
+      "image_url": "https://example.com/images/thit-ba-chi-lon.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Đồng Xuân",
+          "detail": "Phố Đồng Xuân, Quận Hoàn Kiếm, Hà Nội"
+        },
+        {
+          "name": "Chợ Ngọc Hà",
+          "detail": "Đường Ngọc Hà, Quận Ba Đình, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Miếng", "Tảng"]
+    },
+    {
+      "id": 2,
+      "category_id": 1,
+      "name": "Thịt Mông Lợn",
+      "image_url": "https://example.com/images/thit-mong-lon.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Hôm",
+          "detail": "Đường Đinh Liệt, Quận Hai Bà Trưng, Hà Nội"
+        },
+        {
+          "name": "Chợ Mai Dịch",
+          "detail": "Đường Mai Dịch, Quận Cầu Giấy, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Miếng", "Tảng"]
+    },
+    {
+      "id": 3,
+      "category_id": 2,
+      "name": "Cá Hồi",
+      "image_url": "https://example.com/images/ca-hoi.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Phú Xá",
+          "detail": "Phố Phú Xá, Quận Bắc Từ Liêm, Hà Nội"
+        },
+        {
+          "name": "Chợ Hàng Da",
+          "detail": "Phố Hàng Da, Quận Hoàn Kiếm, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Miếng", "Con"]
+    },
+    {
+      "id": 4,
+      "category_id": 1,
+      "name": "Gà Ta",
+      "image_url": "https://example.com/images/ga-ta.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Thành Công",
+          "detail": "Đường Láng, Quận Ba Đình, Hà Nội"
+        },
+        {
+          "name": "Chợ Gói",
+          "detail": "Quận Hoàn Kiếm, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Con"]
+    },
+    {
+      "id": 5,
+      "category_id": 3,
+      "name": "Rau Cải Xanh",
+      "image_url": "https://example.com/images/rau-cai-xanh.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Bưởi",
+          "detail": "Quận Tây Hồ, Hà Nội"
+        },
+        {
+          "name": "Chợ Hàng Da",
+          "detail": "Phố Hàng Da, Quận Hoàn Kiếm, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Bó", "Túi"]
+    },
+    {
+      "id": 6,
+      "category_id": 5,
+      "name": "Táo Mỹ",
+      "image_url": "https://example.com/images/tao-my.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Tân Mai",
+          "detail": "Đường Tân Mai, Quận Hoàng Mai, Hà Nội"
+        },
+        {
+          "name": "Chợ Cầu Giấy",
+          "detail": "Quận Cầu Giấy, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Quả", "Thùng"]
+    },
+    {
+      "id": 7,
+      "category_id": 5,
+      "name": "Cam Navel",
+      "image_url": "https://example.com/images/cam-navel.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Mơ",
+          "detail": "Quận Hai Bà Trưng, Hà Nội"
+        },
+        {
+          "name": "Chợ Hàng Bè",
+          "detail": "Phố Hàng Bè, Quận Hoàn Kiếm, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Quả", "Thùng"]
+    },
+    {
+      "id": 8,
+      "category_id": 6,
+      "name": "Coca Cola",
+      "image_url": "https://example.com/images/coca-cola.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Tân Mai",
+          "detail": "Đường Tân Mai, Quận Hoàng Mai, Hà Nội"
+        },
+        {
+          "name": "Siêu Thị VinMart",
+          "detail": "Quận Cầu Giấy, Hà Nội"
+        }
+      ],
+      "list_units": ["Chai", "Lon", "Thùng"]
+    },
+    {
+      "id": 9,
+      "category_id": 3,
+      "name": "Sữa Vinamilk",
+      "image_url": "https://example.com/images/sua-vinamilk.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Bưởi",
+          "detail": "Quận Tây Hồ, Hà Nội"
+        },
+        {
+          "name": "Siêu Thị Big C",
+          "detail": "Quận Long Biên, Hà Nội"
+        }
+      ],
+      "list_units": ["Hộp", "Lon", "Thùng"]
+    },
+    {
+      "id": 10,
+      "category_id": 3,
+      "name": "Mỳ Gói Hảo Hảo",
+      "image_url": "https://example.com/images/my-goi-hao-hao.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Vĩnh Tuy",
+          "detail": "Quận Hai Bà Trưng, Hà Nội"
+        },
+        {
+          "name": "Chợ Mai Dịch",
+          "detail": "Đường Mai Dịch, Quận Cầu Giấy, Hà Nội"
+        }
+      ],
+      "list_units": ["Gói", "Thùng"]
+    },
+    {
+      "id": 11,
+      "category_id": 1,
+      "name": "Cá Rô Phi",
+      "image_url": "https://example.com/images/ca-ro-phi.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Ngọc Hà",
+          "detail": "Đường Ngọc Hà, Quận Ba Đình, Hà Nội"
+        },
+        {
+          "name": "Chợ Gia Lâm",
+          "detail": "Quận Gia Lâm, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Con"]
+    },
+    {
+      "id": 12,
+      "category_id": 4,
+      "name": "Cải Xoăn",
+      "image_url": "https://example.com/images/cai-xoan.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Tây Sơn",
+          "detail": "Quận Đống Đa, Hà Nội"
+        },
+        {
+          "name": "Chợ Nghĩa Tân",
+          "detail": "Quận Cầu Giấy, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Bó"]
+    },
+    {
+      "id": 13,
+      "category_id": 2,
+      "name": "Thịt Bò Mỹ",
+      "image_url": "https://example.com/images/thit-bo-my.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Bưởi",
+          "detail": "Quận Tây Hồ, Hà Nội"
+        },
+        {
+          "name": "Chợ Hàng Da",
+          "detail": "Phố Hàng Da, Quận Hoàn Kiếm, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Miếng", "Tảng"]
+    },
+    {
+      "id": 14,
+      "category_id": 1,
+      "name": "Gà Ri",
+      "image_url": "https://example.com/images/ga-ri.jpg",
+      "list_address": [
+        {
+          "name": "Chợ Cầu Giấy",
+          "detail": "Quận Cầu Giấy, Hà Nội"
+        },
+        {
+          "name": "Chợ Tân Mai",
+          "detail": "Đường Tân Mai, Quận Hoàng Mai, Hà Nội"
+        }
+      ],
+      "list_units": ["Kg", "Gram", "Con"]
+    },
+    {
+      "id": 15,
+      "category_id": 6,
+      "name": "Pepsi",
+      "image_url": "https://example.com/images/pepsi.jpg",
+      "list_address": [
+        {
+          "name": "Siêu Thị Coopmart",
+          "detail": "Quận Đống Đa, Hà Nội"
+        },
+        {
+          "name": "Siêu Thị Lotte",
+          "detail": "Quận Ba Đình, Hà Nội"
+        }
+      ],
+      "list_units": ["Chai", "Lon", "Thùng"]
+    }
+  ]
+  

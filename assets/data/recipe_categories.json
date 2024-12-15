@@ -1,0 +1,52 @@
+[
+    {
+      "id": 1,
+      "name": "Món Xào",
+      "image_url": "https://example.com/images/mon-xao.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Món Luộc",
+      "image_url": "https://example.com/images/mon-luoc.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Món Nướng",
+      "image_url": "https://example.com/images/mon-nuong.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Món Nộm",
+      "image_url": "https://example.com/images/mon-nom.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Món Hầm",
+      "image_url": "https://example.com/images/mon-ham.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Món Canh",
+      "image_url": "https://example.com/images/mon-canh.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Món Gỏi",
+      "image_url": "https://example.com/images/mon-goi.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Món Chiên",
+      "image_url": "https://example.com/images/mon-chien.jpg"
+    },
+    {
+      "id": 9,
+      "name": "Món Kho",
+      "image_url": "https://example.com/images/mon-kho.jpg"
+    },
+    {
+      "id": 10,
+      "name": "Món Tráng Miệng",
+      "image_url": "https://example.com/images/mon-trang-mieng.jpg"
+    }
+]
