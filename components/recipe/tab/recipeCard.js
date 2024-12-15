@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,  Modal, Button, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import colorlibrary from './colorlibrary';
+import colorlibrary from '../../../assets/color/colorlibrary';
 import Making from './Making';
-import {getToken, getRcipeDetail} from '../screen/get_data';
+import {getToken, getRcipeDetail} from '../../../api/apiRecipe';
 
 
 export default function RecipeCard({ route, navigation }) {
 
   const [item, setItem] = useState(null)
   const { item: item_param } = route.params; 
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const handleVote = (rating) => {
+    Alert.alert('Thành công', `Bạn đã đánh giá ${rating} sao!`);
+  };
 
   const fetchRecipeDetail = async () => {
     try {
@@ -65,17 +71,17 @@ export default function RecipeCard({ route, navigation }) {
           <Text style={styles.description}>{item.description}</Text>
 
           <View style={styles.info}>
-            <OverViewItem iconPath={require('../assets/infoTime.png')} info={item.time+' phút'} />
-            <OverViewItem iconPath={require('../assets/infoNumperson.png')} info={item.serving+' người'} />
+            <OverViewItem iconPath={require('../../../assets/images/recipes/infoTime.png')} info={item.time+' phút'} />
+            <OverViewItem iconPath={require('../../../assets/images/recipes/infoNumperson.png')} info={item.serving+' người'} />
             <OverViewItem 
-              iconPath={require('../assets/infoCost.png')} 
+              iconPath={require('../../../assets/images/recipes/infoCost.png')} 
               info={`${Number(item.cost_estimate).toLocaleString('vi-VN')}đ`} 
             />
-            <OverViewItem iconPath={require('../assets/infoCalo.png')} info={item.kcal +' kcal'} />
+            <OverViewItem iconPath={require('../../../assets/images/recipes/infoCalo.png')} info={item.kcal +' kcal'} />
           </View>
 
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.buttonYellow}>
+            <TouchableOpacity style={styles.buttonYellow}   onPress={() => setModalVisible(true)}>
               <Text style={styles.buttonText}>Đánh giá</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buttonGreen}>
@@ -90,6 +96,15 @@ export default function RecipeCard({ route, navigation }) {
       />
 
       <Making instructions={item.instructions}/>
+
+
+      <RatingModal
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        onVote={handleVote}
+      />
+
+
     </ScrollView>
   );
 }
@@ -99,7 +114,7 @@ function IngredientList({ ingredients }) {
     <View style={styles.section}>
       <View style={styles.sectionTitle}>
         <Text style={styles.sectionText}>Nguyên liệu</Text>
-        <Image style={styles.sectionIcon} source={require('../assets/caret-down.png')} />
+        <Image style={styles.sectionIcon} source={require('../../../assets/images/recipes/caret-down.png')} />
       </View>
 
       <View style={styles.ingredientList}>
@@ -118,7 +133,7 @@ function IngredientList({ ingredients }) {
 function MarketItem({ingredientWeight, ingredientName}) {
   return (
     <View style={styles.ingredient}>
-        <Image style={styles.bagIcon} source={require('../assets/bag-check.png')}/>
+        <Image style={styles.bagIcon} source={require('../../../assets/images/recipes/bag-check.png')}/>
         <Text style={styles.ingredientText}>{ingredientWeight}</Text>
         <Text style={styles.ingredientText}>{ingredientName}</Text>
   </View>
@@ -131,12 +146,12 @@ function Vote({rateNumber, viewNumber}) {
     <View style={styles.vote}>
     <View style={styles.rate}>
         <Text style={styles.rateText}>{rateNumber}</Text>
-        <Image style= {styles.starIcon} source={require('../assets/star.png')}/>
+        <Image style= {styles.starIcon} source={require('../../../assets/images/recipes/star.png')}/>
     </View>
     <Text style={styles.sepatate}>|</Text>
     <View style={styles.view}>
     <Text style={styles.rateText}>{viewNumber}</Text>
-    <Image style={styles.ViewIcon} source={require('../assets/view.png')}/>
+    <Image style={styles.ViewIcon} source={require('../../../assets/images/recipes/view.png')}/>
     </View>
   </View>
   );
@@ -151,6 +166,66 @@ function OverViewItem({iconPath, info}) {
 
   );
 }
+
+
+
+const StarRating = ({ maxStars = 5, onRatingChange }) => {
+  const [rating, setRating] = useState(0);
+
+  const handleStarPress = (index) => {
+    setRating(index + 1);
+    if (onRatingChange) {
+      onRatingChange(index + 1);
+    }
+  };
+
+  return (
+    <View style={styles.starContainer}>
+      {Array.from({ length: maxStars }, (_, index) => (
+        <TouchableOpacity key={index} onPress={() => handleStarPress(index)}>
+          <Icon
+            name={index < rating ? 'star' : 'star-outline'}
+            size={40}
+            color={index < rating ? '#FFD700' : '#CCCCCC'}
+            style={styles.vote_star}
+          />
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
+
+const RatingModal = ({ visible, onClose, onVote }) => {
+  const [selectedRating, setSelectedRating] = useState(0);
+
+  return (
+    <Modal
+      transparent={true}
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Rate this item</Text>
+          <StarRating onRatingChange={(rating) => setSelectedRating(rating)} />
+          <View style={styles.buttom_container}>
+            <Button
+                title="Vote"
+                onPress={() => {
+                  onVote(selectedRating);
+                  onClose();
+              
+                }}
+                style={styles.voteButton}
+              />
+              <Button title="Cancel" onPress={onClose}   style={styles.voteButton} color={colorlibrary['--color-danger']}/>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 
 const styles = StyleSheet.create({
@@ -428,7 +503,55 @@ const styles = StyleSheet.create({
    bagIcon:{
     width: 16,
     height: 16,
-   }
+   },
 
+
+
+   buttom_container:{
+    width: '100%',
+    flexDirection : "row",
+    justifyContent: 'center',
+     gap: 20
+   },
+   voteButton: {
+    backgroundColor: colorlibrary['--color-bg2'],
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+  },
+  voteButtonText: {
+    color: colorlibrary['--black-100'],
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colorlibrary['--color-default'],
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    flexDirection: 'col',
+    gap: 20,
+    backgroundColor: colorlibrary['--color-bg'],
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  starContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  vote_star: {
+    marginHorizontal: 5,
+  },
 
 });

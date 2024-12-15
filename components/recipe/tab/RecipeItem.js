@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import colorlibrary from './colorlibrary';
+import colorlibrary from '../../../assets/color/colorlibrary';
 
 const RecipeItem = ({ data }) => {
 
@@ -26,18 +26,18 @@ const RecipeItem = ({ data }) => {
 
         <View style={styles.info}>
           <View style={styles.userName}>
-            <Image source={require('../assets/person-circle-outline.png')} style={styles.icon} />
+            <Image source={require('../../../assets/images/recipes/person-circle-outline.png')} style={styles.icon} />
             <Text style={styles.infoText}>{user_fullname}</Text>
           </View>
           
           <View style={styles.frame1}>
             <View style={styles.time_step}>
-              <Image source={require('../assets/time-outline.png')} style={styles.icon} />
+              <Image source={require('../../../assets/images/recipes/time-outline.png')} style={styles.icon} />
               <Text style={styles.infoText}>{time}</Text>
             </View>
 
             <View style={styles.time_step}>
-              <Image source={require('../assets/albums-outline.png')} style={styles.icon} />
+              <Image source={require('../../../assets/images/recipes/albums-outline.png')} style={styles.icon} />
               <Text style={styles.infoText}>{serving}</Text>
             </View>
           </View>
@@ -46,14 +46,14 @@ const RecipeItem = ({ data }) => {
         <View style={styles.vote}>
           <View style={styles.totalRate}>
             <Text style={styles.rate}>{total_saves}</Text>
-            <Image style={styles.star} source={require('../assets/star.png')} />
+            <Image style={styles.star} source={require('../../../assets/images/recipes/star.png')} />
           </View>
 
           <Text style={styles.separate}>|</Text>
 
           <View style={styles.totalView}>
             <Text style={styles.view}>{total_views}</Text>
-            <Image style={styles.eyes} source={require('../assets/view.png')} />
+            <Image style={styles.eyes} source={require('../../../assets/images/recipes/view.png')} />
           </View>
         </View>
       </View>

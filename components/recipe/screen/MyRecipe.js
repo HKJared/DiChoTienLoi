@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Image, TouchableOpacity, Text, FlatList, Alert } from "react-native";
-import colorlibrary from "../tab/colorlibrary";
+import colorlibrary from "../../../assets/color/colorlibrary";
 import RecipeItem from "../tab/RecipeItem";
 import { useIsFocused } from '@react-navigation/native';  
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {deleteRecipe, updatedData, getToken} from './get_data'
+import {deleteRecipe, updatedData, getToken} from '../../../api/apiRecipe'
 
 
 const getRecipeData = async (key) => {

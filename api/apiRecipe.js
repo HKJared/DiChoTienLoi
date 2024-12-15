@@ -1,53 +1,31 @@
 import axios from "axios";
-// const axios = require('axios');
-const base_url = 'http://192.168.1.104:8888/api'
-const username = 'ky1234';
-const password = 'ky1234';
-
-const getToken = async () => {
-
-  try {
-    const response = await axios.post(base_url + "/login", {
-      account: { username, password }
-    }, {
-      headers: { "Content-Type": "application/json" }
-    });
-
-    const { jwt } = response.data;
-    console.log("Login successful! JWT:", jwt);
-
-    return jwt;
-  } catch (error) {
-    console.error("Error logging in:", error);
-    return null;
-  }
-};
+import { getToken } from "../services/storageService";
+import BASE_HOST_URL from "./baseHostUrl";
 
 
-const getInfoData = async (jwt) => {
-  try {
-    const response = await axios.get(base_url + "/user/info", {   
-      headers: {
-        "Content-Type": "application/json",
-        "authentication": jwt,
-      },
-    });
+// const getToken = async () => {
 
-    if (response.data && response.data.user) {
-      return response.data.user;
-    } else {
-      console.error("No user data found in response");
-      return null; 
-    }
-  } catch (error) {
-    console.error("Error getting user info:", error);
-    return null;
-  }
-};
+//   try {
+//     const response = await axios.post(BASE_HOST_URL + "/login", {
+//       account: { username, password }
+//     }, {
+//       headers: { "Content-Type": "application/json" }
+//     });
+
+//     const { jwt } = response.data;
+//     console.log("Login successful! JWT:", jwt);
+
+//     return jwt;
+//   } catch (error) {
+//     console.error("Error logging in:", error);
+//     return null;
+//   }
+// };
+
 
 const getRecipeCategories = async (jwt) => {
   try {
-    const response = await axios.get(base_url+ "/user/recipe-categories", {
+    const response = await axios.get(BASE_HOST_URL+ "api/user/recipe-categories", {
       headers: {
         "Content-Type": "application/json",
         "authentication": jwt,
@@ -64,7 +42,7 @@ const getRecipeCategories = async (jwt) => {
 
 const getRecipe = async (category_id) => {
     try {
-      const response = await axios.get(`${base_url}/recipes?category_id=${category_id}`, {
+      const response = await axios.get(`${BASE_HOST_URL}api/recipes?category_id=${category_id}`, {
         headers: {
             "Content-Type": "application/json",
         },
@@ -79,7 +57,7 @@ const getRecipe = async (category_id) => {
 
 const searchRecipe = async (keyword, page, itemsPerPage) => {
   try {
-    const response = await axios.get(`${base_url}/recipes?keyword=${keyword}&page=${page}&itemsPerPage=${itemsPerPage}`, {
+    const response = await axios.get(`${BASE_HOST_URL}api/recipes?keyword=${keyword}&page=${page}&itemsPerPage=${itemsPerPage}`, {
       headers: {
           "Content-Type": "application/json",
       },
@@ -96,7 +74,7 @@ const searchRecipe = async (keyword, page, itemsPerPage) => {
 
 const getRcipeDetail = async (jwt, recipe_id) => {
   try {
-    const response = await axios.get(`${base_url}/user/recipe?recipe_id=${recipe_id}`, {
+    const response = await axios.get(`${BASE_HOST_URL}api/user/recipe?recipe_id=${recipe_id}`, {
       headers: {
         "Content-Type": "application/json",
         "authentication": jwt,
@@ -116,7 +94,7 @@ const updatedData = async (jwt, recipe_id, newData) => {
 
   try {
     const response = await axios.put(
-      `${base_url}/user/recipe`,
+      `${BASE_HOST_URL}api/user/recipe`,
       {
         recipe_id: recipe_id,
         newData,
@@ -143,7 +121,7 @@ const CreateRecipeDetail = async (jwt, newRecipe) => {
 
   try {
     const response = await axios.post(
-      `${base_url}/user/recipe`,
+      `${BASE_HOST_URL}api/user/recipe`,
       {
         recipe:  newRecipe,
       },
@@ -167,7 +145,7 @@ const CreateRecipeDetail = async (jwt, newRecipe) => {
 const getMarketplaceitem = async () =>{
   try {
     const response = await axios.get(
-      `${base_url}/marketplace-items`,
+      `${BASE_HOST_URL}api/marketplace-items`,
   
       {
         headers: {
@@ -188,7 +166,7 @@ const getMarketplaceitem = async () =>{
 const deleteRecipe = async (jwt, recipeId) =>{
   try {
     const response = await axios.delete(
-      `${base_url}/user/recipe`,
+      `${BASE_HOST_URL}api/user/recipe`,
   
       {
         headers: {
@@ -211,11 +189,11 @@ const deleteRecipe = async (jwt, recipeId) =>{
 
 
 
-// (async () => {
-//   const jwt = await getToken();
-//   const recipeCategoryData = await getRecipeCategories(jwt);
-//   console.log('recipeCategoryData', recipeCategoryData)
-// })();
+(async () => {
+  const jwt = await getToken();
+  const recipeCategoryData = await getRecipeCategories(jwt);
+  console.log('recipeCategoryData', recipeCategoryData)
+})();
 
 
 export {getToken, getRecipeCategories, getRecipe, getRcipeDetail, searchRecipe, updatedData, CreateRecipeDetail, getMarketplaceitem, deleteRecipe} 

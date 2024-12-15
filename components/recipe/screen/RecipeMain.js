@@ -2,28 +2,30 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Image, TextInput, TouchableOpacity, Alert} from "react-native";
 import RecipeCategory from "./recipeCategory";
 import RecipeSuggest from "./recipeSuggest";
-import colorlibrary from "../tab/colorlibrary";
+import colorlibrary from "../../../assets/color/colorlibrary";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import RecipeCard from "../tab/recipeCard";
-import Header from "./header";
+
+import Header from "../../Header";
+import { useNavigation } from '@react-navigation/native';
 import CreateRecipe from "../tab/createRecipe";
 import  UpdateRecipe from "../tab/UpdateRecipe";
 import MyRecipe from './MyRecipe'
 
-import { getToken, getRecipeCategories, getRecipe, searchRecipe } from "./get_data";
+import { getToken, getRecipeCategories, getRecipe, searchRecipe } from "../../../api/apiRecipe";
 
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator(); 
 
 export default function Final_screen(){
+
   return (
- 
+
     <NavigationContainer>
-      
         <Stack.Navigator
-            screenOptions={({ route }) => ({
-              header: () => <Header title={route.name} />,
+            screenOptions={({ route, navigation }) => ({
+              header: () => <Header title={route.name} onBackPress={() => {navigation.goBack()}} />,
             })}
           >
             <Stack.Screen name="Nấu ăn" component={RecipeMain} />
@@ -162,7 +164,7 @@ const PannelHeader = ({ setIsSearch, setSearchText, navigation }) => {
             <Text style={styles.subtitle}>Hôm nay bạn muốn ăn gì?</Text>
           </View>
           <Image 
-            source={require('../assets/chef-hat_svgrepo.com.png')} 
+            source={require('../../../assets/images/recipes/chef-hat_svgrepo.com.png')} 
             style={styles.chef_icon}
           />
         </View>
@@ -184,7 +186,7 @@ const PannelHeader = ({ setIsSearch, setSearchText, navigation }) => {
             <TouchableOpacity  onPress={search}>
               <Image 
                 style={styles.searchIcon}
-                source={require('../assets/search-outline.png')}
+                source={require('../../../assets/images/recipes/search-outline.png')}
               />
             </TouchableOpacity>
           </View>

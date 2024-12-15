@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, FlatList, View, TouchableOpacity, ImageBackground, Text } from "react-native";
-import colorlibrary from './colorlibrary';
+import colorlibrary from '../../../assets/color/colorlibrary';
 
 
 export default function CategoryList({ categoriesData, layout, onSelectCategory }) {

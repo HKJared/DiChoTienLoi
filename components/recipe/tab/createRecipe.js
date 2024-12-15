@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import colorlibrary from './colorlibrary';
+import colorlibrary from '../../../assets/color/colorlibrary';
 import {
   StyleSheet,
   View,
@@ -11,7 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CreateRecipeDetail, getToken, getMarketplaceitem} from '../screen/get_data';
+import { CreateRecipeDetail, getToken, getMarketplaceitem} from '../../../api/apiRecipe';
 import RNPickerSelect from 'react-native-picker-select';
 
 const MY_RECIPE_KEY = 'MyRecipeData';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Image, TouchableOpacity, Text, FlatList, SafeAreaView } from "react-native";
-import colorlibrary from "../tab/colorlibrary";
+import colorlibrary from "../../../assets/color/colorlibrary";
 import RecipeItem from "../tab/RecipeItem";
 import CategoryList from "../tab/CategoryLayout";
 
@@ -40,7 +40,7 @@ export default function RecipeSuggest({
           <TouchableOpacity onPress={toggleCategoryTab}>
             <Image
               style={styles.keyWordIcon}
-              source={require('../assets/filter-circle-outline.png')}
+              source={require('../../../assets/images/recipes/filter-circle-outline.png')}
             />
           </TouchableOpacity>
         ) : null}
@@ -51,7 +51,7 @@ export default function RecipeSuggest({
           <View style={styles.titleTab}>
             <Text style={styles.categoryTabText}>Danh mục món ăn</Text>
             <TouchableOpacity onPress={toggleCategoryTab}>
-               <Image style= {styles.backIcon} source={require('../assets/chevron-forward.png')}/>
+               <Image style= {styles.backIcon} source={require('../../../assets/images/recipes/chevron-forward.png')}/>
             </TouchableOpacity>
           
           </View>

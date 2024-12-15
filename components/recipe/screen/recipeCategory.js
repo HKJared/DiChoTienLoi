@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
-import colorlibrary from "../tab/colorlibrary";
+import colorlibrary from "../../../assets/color/colorlibrary";
 import CategoryList from "../tab/CategoryLayout";
 
 
@@ -13,7 +13,7 @@ function Menu({ onSelect, selected }) {
       >
         <View>
           <Image
-            source={require('../assets/list.png')}
+            source={require('../../../assets/images/recipes/list.png')}
             style={styles.icon}
           />
         </View>
@@ -24,7 +24,7 @@ function Menu({ onSelect, selected }) {
       >
         <View>
           <Image
-            source={require('../assets/grid-outline.png')}
+            source={require('../../../assets/images/recipes/grid-outline.png')}
             style={styles.icon}
           />
         </View>

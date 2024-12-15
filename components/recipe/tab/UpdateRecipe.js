@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import colorlibrary from './colorlibrary';
+import colorlibrary from '../../../assets/color/colorlibrary';
 import {
   StyleSheet,
   View,
@@ -8,10 +8,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  FlatList,
 } from 'react-native';
-import axios from 'axios';
-import { updatedData, getToken, getMarketplaceitem } from '../screen/get_data';
+
+import { updatedData, getToken, getMarketplaceitem } from '../../../api/apiRecipe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
 

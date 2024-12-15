@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
+// import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Ionicons'
 
-const Header = ({ title }) => {
+const Header = ({ title, onBackPress }) => {
 
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity >
+      <TouchableOpacity onPress={onBackPress } >
         <Icon name="chevron-back" size={28} color="#0057a3" />
       </TouchableOpacity>
 
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
      borderBottomColor: '#ddd',
   },
   headerTitle: {
-    position : 'absolute',
+    // position : 'absolute',
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',

@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image } from 'react-native';
-import colorlibrary from './colorlibrary';
+import colorlibrary from '../../../assets/color/colorlibrary';
 
 export default function Making({ instructions }) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionTitle}>
         <Text style={styles.sectionText}>Cách làm</Text>
-        <Image style={styles.sectionIcon} source={require('../assets/caret-down.png')} />
+        <Image style={styles.sectionIcon} source={require('../../../assets/images/recipes/caret-down.png')} />
       </View>
 
       <View style={styles.stepList}>
@@ -28,7 +28,7 @@ function Step({name, description}){
     return(
       <View style={styles.step}>
         <View style={styles.stepName}>
-            <Image style={styles.stepIcon} source={require('../assets/layers.png')} />
+            <Image style={styles.stepIcon} source={require('../../../assets/images/recipes/layers.png')} />
             <Text style={styles.stepTitle}>{name}</Text>
         </View>
             
