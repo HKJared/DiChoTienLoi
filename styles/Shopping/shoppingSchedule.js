@@ -285,9 +285,10 @@ const shoppingScheduleStyle = StyleSheet.create({
     paddingRight: 15,
   },
   unitBox: {
-    position: "absolute",
+    backgroundColor: "#FFFFFFF",
+    position: "relative",
     top: 40, // Điều chỉnh vị trí của box tùy theo yêu cầu
-    left: -10,
+    left: -50,
     backgroundColor: "white",
     borderWidth: 1,
     borderColor: "gray",
@@ -295,11 +296,13 @@ const shoppingScheduleStyle = StyleSheet.create({
     width: 50, // Điều chỉnh chiều rộng của box
     zIndex: 2,
     pointerEvents: "auto",
+    opacity: 1,
   },
   unitItem: {
     padding: 10,
   },
   unitText: {
+    zIndex: 0,
     textAlign: "center",
     fontSize: 12,
     fontWeight: "regular",

@@ -9,7 +9,7 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import shoppingCalenderStyle from "@/styles/Shopping/shopping";
 import { colors } from "@/styles/variable";
-
+import { getMarketCategories } from "@/controllers/marketplace-categories";
 // Hàm lấy các ngày trong tháng hiện tại
 const getDaysInCurrentMonth = () => {
   const today = new Date();
@@ -70,6 +70,7 @@ const ShoppingCalender = ({
 
   // Effect để cuộn đến ngày đã chọn khi `selectedDay` thay đổi
   useEffect(() => {
+    getData();
     if (selectedDay && scrollViewRef.current) {
       const selectedDayIndex = days.indexOf(selectedDay);
       if (selectedDayIndex !== -1) {
@@ -96,7 +97,11 @@ const ShoppingCalender = ({
   const handlePress = (index) => {
     setSelectedItem(index);
   };
-
+  // Gọi api
+  const getData = async () => {
+    const response = await getMarketCategories();
+    console.log("frontend ", response);
+  };
   return (
     <View style={shoppingCalenderStyle.container}>
       <View style={shoppingCalenderStyle.containerCalenderToday}>
