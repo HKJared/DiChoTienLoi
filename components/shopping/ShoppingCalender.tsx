@@ -9,7 +9,10 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import shoppingCalenderStyle from "@/styles/Shopping/shopping";
 import { colors } from "@/styles/variable";
-import { getMarketCategories } from "@/controllers/marketplace-categories";
+import {
+  getMarketCategories,
+  getMarketItems,
+} from "@/api/marketplaceCategories";
 // Hàm lấy các ngày trong tháng hiện tại
 const getDaysInCurrentMonth = () => {
   const today = new Date();
@@ -32,8 +35,10 @@ const getDaysInCurrentMonth = () => {
 
 const ShoppingCalender = ({
   onCreateNewSchedule,
+  onDate,
 }: {
   onCreateNewSchedule: (date: string) => void;
+  onDate: string | null;
 }) => {
   const days = getDaysInCurrentMonth();
   const today = new Date().getDate();
@@ -43,7 +48,7 @@ const ShoppingCalender = ({
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Danh sách các ngày đặc biệt
-  const specialDays = [7, 8, 14, 28, 1];
+  const specialDays = [];
 
   // Hàm tạo selectedDate với định dạng "YYYY-MM-DDT00:00:00.000Z"
   const getSelectedDate = (day: number) => {
@@ -70,7 +75,6 @@ const ShoppingCalender = ({
 
   // Effect để cuộn đến ngày đã chọn khi `selectedDay` thay đổi
   useEffect(() => {
-    getData();
     if (selectedDay && scrollViewRef.current) {
       const selectedDayIndex = days.indexOf(selectedDay);
       if (selectedDayIndex !== -1) {
@@ -97,11 +101,28 @@ const ShoppingCalender = ({
   const handlePress = (index) => {
     setSelectedItem(index);
   };
-  // Gọi api
-  const getData = async () => {
-    const response = await getMarketCategories();
-    console.log("frontend ", response);
-  };
+
+  // const getDateOnly = (date: string): string => {
+  //   // Kiểm tra xem date có chứa dấu 'T' (dạng ISO) hay không
+  //   if (date.includes("T")) {
+  //     // Nếu là dạng ISO, tạo đối tượng Date và chuyển đổi về định dạng YYYY-MM-DD
+  //     const dateObj = new Date(date);
+  //     return dateObj.toLocaleDateString("en-GB"); // Sử dụng 'en-GB' để đảm bảo định dạng ngày là "DD/MM/YYYY"
+  //   }
+  //   // Nếu là dạng "YYYY-MM-DD", trả về như cũ
+  //   return date;
+  // };
+  // const dateOnly = getDateOnly(onDate); // "30/12/2024"
+  // const [day, month, year] = dateOnly.split("/"); // Tách thành [day, month, year]
+  // const dayNumber = parseInt(day, 10); // Chuyển ngày thành số nguyên
+
+  // // Thêm ngày vào mảng specialDays nếu chưa có trong đó
+  // if (!specialDays.includes(dayNumber)) {
+  //   specialDays.push(dayNumber);
+  // }
+
+  // console.log("Mảng specialDays sau khi thêm ngày:", specialDays);
+
   return (
     <View style={shoppingCalenderStyle.container}>
       <View style={shoppingCalenderStyle.containerCalenderToday}>
@@ -136,7 +157,7 @@ const ShoppingCalender = ({
                   shoppingCalenderStyle.dotSpecial,
                   {
                     backgroundColor:
-                      day === selectedDay ? colors.white : colors.primary, // Nếu ngày đã chọn thì dùng màu xanh, không thì dùng màu đỏ
+                      day === selectedDay ? colors.white : colors.primary, // Nếu ngày đã chọn thì dùng màu xanh, không thì dùng màu xám
                   },
                 ]}
               ></View>

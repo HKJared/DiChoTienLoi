@@ -6,14 +6,17 @@ import {
   TextInput,
   ScrollView,
   TouchableWithoutFeedback,
+  FlatList,
 } from "react-native";
 import { colors } from "@/styles/variable";
-
+import {
+  getMarketCategories,
+  getMarketItems,
+} from "@/api/marketplaceCategories";
 import React, { useState, useEffect } from "react";
 import { Calendar } from "react-native-calendars"; // Thư viện lịch
-
 import shoppingScheduleStyle from "@/styles/Shopping/shoppingSchedule";
-
+import BASE_HOST_URL from "@/api/baseHostUrl";
 const getFormattedDate = (date: Date) => {
   const day = date.getDate();
   const currentMonth = new Date().getMonth() + 1;
@@ -24,12 +27,13 @@ const getFormattedDate = (date: Date) => {
 const ShoppingScheduleCalender = ({
   selectedDate,
   onDateChange,
+  onComplete,
 }: {
   selectedDate: string | null;
   onDateChange: (date: string) => void;
+  onComplete: (items: any[], selectedUnits: any[], countItem: any[]) => void;
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
-
   const handleDayPress = (day: any) => {
     if (day && day.dateString) {
       onDateChange(day.dateString);
@@ -49,89 +53,30 @@ const ShoppingScheduleCalender = ({
   // const [inputTextShopping, setInputTextShopping] = useState("");
   const [isSuggestionBoxVisible, setSuggestionBoxVisible] = useState(false);
   const [isShowFood, setShowFood] = useState(false);
-  const toggleSuggestionBox = () => {
-    setSuggestionBoxVisible(!isSuggestionBoxVisible);
-  };
+  // const toggleSuggestionBox = () => {
+  //   setSuggestionBoxVisible(!isSuggestionBoxVisible);
+  // };
   const handleShowFoodCate = () => {
     setShowFood(!isShowFood);
+    setSuggestionBoxVisible(false);
   };
 
-  const foodItems = [
-    {
-      id: 1,
-      name: "Thực phẩm tươi sống",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 2,
-      name: "Rau củ quả",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 3,
-      name: "Thực phẩm chế biến sẵn",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 4,
-      name: "Gia vị",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 5,
-      name: "Trái cây",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 6,
-      name: "Táo",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 7,
-      name: "Lê",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 8,
-      name: "Ổi",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 9,
-      name: "Bưởi",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-    {
-      id: 10,
-      name: "Thịt kho tàu",
-      image: require("@/assets/images/shopping/nocatefood.png"),
-    },
-  ];
   const [isUnitBoxVisible, setIsUnitBoxVisible] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState("kg");
+  const [selectedUnits, setSelectedUnits] = useState({});
 
-  const units = ["kg", "lạng", "gram", "đôi", "lít"];
-
-  const handleUnitPress = (unit: string) => {
-    setSelectedUnit(unit); // Cập nhật đơn vị đã chọn
-    setIsUnitBoxVisible(false); // Ẩn box lựa chọn khi đã chọn đơn vị
+  const handleUnitPress = (itemId: string, unit: string) => {
+    console.log(itemId, unit);
+    setSelectedUnits((prevUnits) => ({
+      ...prevUnits,
+      [itemId]: unit, // Cập nhật đơn vị cho item tương ứng
+    }));
+    // console.log("selectedUnits", selectedUnits);
+    setVisibleUnitIndex(null); // Ẩn box lựa chọn sau khi chọn
   };
 
   const [visibleUnitIndex, setVisibleUnitIndex] = useState<number | null>(null);
 
-  const items = Array.from({ length: 10 }, (_, index) => ({
-    id: index + 1,
-    name: `Gạo ${index + 1}`,
-    type: "Nhu yếu phẩm",
-    image: require("@/assets/images/shopping/NoItemFood.png"),
-  }));
-  interface Item {
-    id: number;
-    name: string;
-    type: string;
-    image: any;
-  }
+  const [items, setItems] = useState([]);
   // Gạo
   const [inputTextShopping, setInputTextShopping] = useState<
     Record<number, string>
@@ -144,12 +89,81 @@ const ShoppingScheduleCalender = ({
       [id]: value,
     }));
   };
+  //Search
+  const [idSearch, setIdSearch] = useState("");
+  const handlePressCategories = (id) => {
+    setIdSearch(id);
+    setSuggestionBoxVisible(true);
+    // console.log("id", idSearch);
+  };
+  // ===========Gọi api=================
+  const [itemsCategories, setItemsCategories] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const getData = async () => {
+    const response = await getMarketCategories();
+    const responseItem = await getMarketItems(); // Thay bằng hàm API của bạn
+    setFilteredItems(responseItem);
+    setItemsCategories(responseItem);
+    setCategories(response.categories); // Cập nhật state
+  };
 
+  // Gọi API khi component được mount
+  useEffect(() => {
+    getData();
+  }, []);
+
+  // Theo dõi giá trị của `categories`
+  useEffect(() => {}, [categories, items]);
+  useEffect(() => {
+    // console.log("date", currentDate);
+    // Kiểm tra xem itemsCategories.items có phải là một mảng không
+    if (idSearch) {
+      const filtered = itemsCategories.items.filter(
+        (item) => item.category_id === idSearch
+      );
+      setFilteredItems(filtered);
+    } else if (Array.isArray(itemsCategories.items)) {
+      const filtered = itemsCategories.items.filter((item) =>
+        item.name.toLowerCase().includes(inputText.toLowerCase())
+      );
+      setFilteredItems(filtered); // Cập nhật danh sách đã lọc
+    } else {
+      setFilteredItems([]); // Hoặc có thể là một mảng rỗng nếu không phải mảng
+    }
+  }, [idSearch, inputText, itemsCategories.items]);
+  // ============= Chọn item ===================
+
+  const handleSelectedItems = (id) => {
+    if (Array.isArray(itemsCategories.items)) {
+      // Tìm phần tử có id khớp
+      const selectedItem = itemsCategories.items.find((item) => item.id === id);
+
+      if (selectedItem) {
+        // Kiểm tra nếu phần tử đã tồn tại trong danh sách items
+        setItems((prevItems) => {
+          const isExist = prevItems.some((item) => item.id === selectedItem.id);
+          if (!isExist) {
+            return [...prevItems, selectedItem];
+          }
+          return prevItems; // Giữ nguyên nếu đã tồn tại
+        });
+        // console.log("Selected Item:", selectedItem);
+      } else {
+        console.log("Không tìm thấy mục nào với id:", id);
+      }
+    } else {
+      console.log("itemsCategories.items không phải là một mảng hợp lệ.");
+    }
+  };
+  useEffect(() => {
+    // console.log("categories", items);
+  }, [items]);
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
-      style={shoppingScheduleStyle.container}
-      showsVerticalScrollIndicator={false}
+      style={shoppingScheduleStyle.container} // Xóa ngoặc {}
+      showsVerticalScrollIndicator={true}
     >
       <View style={shoppingScheduleStyle.containerCalenderEdit}>
         <View style={shoppingScheduleStyle.calender}>
@@ -207,8 +221,11 @@ const ShoppingScheduleCalender = ({
               placeholder="Tìm kiếm thực phẩm"
               value={inputText}
               onChangeText={setInputText}
-              onFocus={() => setSuggestionBoxVisible(true)}
-              onBlur={() => setSuggestionBoxVisible(false)}
+              onFocus={() => {
+                setIdSearch(""); // Đặt idSearch thành chuỗi rỗng khi trường tìm kiếm được nhấn
+                setSuggestionBoxVisible(true);
+              }}
+              // onBlur={() => setSuggestionBoxVisible(false)}
             />
             <View style={shoppingScheduleStyle.lineHeight}></View>
             <TouchableOpacity
@@ -224,59 +241,66 @@ const ShoppingScheduleCalender = ({
 
           {/* Hộp gợi ý */}
           {isSuggestionBoxVisible && (
-            <View style={shoppingScheduleStyle.suggestionBox}>
-              {/* item */}
-              <View style={shoppingScheduleStyle.suggestionItem}>
-                <View style={shoppingScheduleStyle.suggestionItem_box}>
-                  {/* Ảnh và tên */}
-                  <View style={shoppingScheduleStyle.containerImgNameFood}>
-                    <Image
-                      source={require("@/assets/images/shopping/NoItemFood.png")}
-                      style={shoppingScheduleStyle.iconNoItemFood}
-                    />
-                    <View style={shoppingScheduleStyle.containerDetailFood}>
-                      <Text style={shoppingScheduleStyle.textNameFood}>
-                        Gạo
-                      </Text>
-                      <Text style={shoppingScheduleStyle.textTypeFood}>
-                        Nhu yếu phẩm
-                      </Text>
-                    </View>
-                  </View>
-                  {/* btn Thêm */}
-                  <TouchableOpacity>
-                    <Text style={shoppingScheduleStyle.textaddFood}>Thêm</Text>
-                  </TouchableOpacity>
-                </View>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                // Đóng bàn phím nếu mở
+                setSuggestionBoxVisible(false); // Ẩn suggestionBox
+              }}
+            >
+              <View style={shoppingScheduleStyle.suggestionBox}>
+                <ScrollView
+                  style={{ maxHeight: 200 }} // Giới hạn chiều cao của ScrollView
+                  showsVerticalScrollIndicator={true}
+                  nestedScrollEnabled={true} // Hiển thị thanh cuộn dọc
+                >
+                  {filteredItems.map((item) => {
+                    // Tìm category name từ items dựa trên category_id
+                    const categoryName =
+                      categories.find((i) => i.id === item.category_id)?.name ||
+                      "Nhu yếu phẩm"; // Nếu không tìm thấy thì dùng "Nhu yếu phẩm"
+
+                    return (
+                      <View
+                        key={item.id.toString()}
+                        style={shoppingScheduleStyle.suggestionItem}
+                      >
+                        <View style={shoppingScheduleStyle.suggestionItem_box}>
+                          {/* Ảnh và tên */}
+                          <View
+                            style={shoppingScheduleStyle.containerImgNameFood}
+                          >
+                            <Image
+                              source={require("@/assets/images/shopping/NoItemFood.png")}
+                              style={shoppingScheduleStyle.iconNoItemFood}
+                            />
+                            <View
+                              style={shoppingScheduleStyle.containerDetailFood}
+                            >
+                              <Text style={shoppingScheduleStyle.textNameFood}>
+                                {item.name}
+                              </Text>
+                              <Text style={shoppingScheduleStyle.textTypeFood}>
+                                {categoryName} {/* Thay thế đây */}
+                              </Text>
+                            </View>
+                          </View>
+                          {/* btn Thêm */}
+                          <TouchableOpacity
+                            onPress={() => handleSelectedItems(item.id)}
+                          >
+                            <Text style={shoppingScheduleStyle.textaddFood}>
+                              Thêm
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </ScrollView>
               </View>
-              {/* item */}
-              <View style={shoppingScheduleStyle.suggestionItem}>
-                <View style={shoppingScheduleStyle.suggestionItem_box}>
-                  {/* Ảnh và tên */}
-                  <View style={shoppingScheduleStyle.containerImgNameFood}>
-                    <Image
-                      source={require("@/assets/images/shopping/NoItemFood.png")}
-                      style={shoppingScheduleStyle.iconNoItemFood}
-                    />
-                    <View style={shoppingScheduleStyle.containerDetailFood}>
-                      <Text style={shoppingScheduleStyle.textNameFood}>
-                        Gạo
-                      </Text>
-                      <Text style={shoppingScheduleStyle.textTypeFood}>
-                        Nhu yếu phẩm
-                      </Text>
-                    </View>
-                  </View>
-                  {/* btn Thêm */}
-                  <TouchableOpacity>
-                    <Text style={shoppingScheduleStyle.textaddFood}>Thêm</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
+            </TouchableWithoutFeedback>
           )}
         </View>
-
         {/* Danh mục thực phẩm */}
         <View style={shoppingScheduleStyle.containerFoodCate}>
           <Text style={shoppingScheduleStyle.textFoodCate}>
@@ -288,21 +312,28 @@ const ShoppingScheduleCalender = ({
             </Text>
           </TouchableOpacity>
         </View>
-        {/* Box food*/}
+        {/* Box food */}
         {isShowFood ? (
           <View style={shoppingScheduleStyle.boxListFood}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {foodItems.map((item) => (
-                <View key={item.id} style={shoppingScheduleStyle.boxItemFood}>
+              {categories.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={shoppingScheduleStyle.boxItemFood}
+                  onPress={() => handlePressCategories(item.id)}
+                >
                   <View style={shoppingScheduleStyle.containerImgFood}>
-                    <Image source={item.image} />
+                    <Image
+                      source={{ uri: item.image_url }}
+                      style={shoppingScheduleStyle.imageCategories}
+                    />
                   </View>
                   <View style={shoppingScheduleStyle.containerTextFood}>
                     <Text style={shoppingScheduleStyle.textFood}>
                       {item.name}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
@@ -315,78 +346,101 @@ const ShoppingScheduleCalender = ({
         <Text style={shoppingScheduleStyle.textShoppingCate}>
           Danh sách mua sắm
         </Text>
-        <ScrollView style={shoppingScheduleStyle.containerListCateShopping}>
-          {items.map((item, index) => (
-            <View
-              key={item.id}
-              style={[
-                shoppingScheduleStyle.containerItemCateShopping,
-                index === items.length - 1 && { marginBottom: 20 },
-              ]}
-            >
-              {/* Ảnh và tên */}
-              <View style={shoppingScheduleStyle.containerImgNameFood}>
-                <Image
-                  source={item.image}
-                  style={shoppingScheduleStyle.iconNoItemFood}
-                />
-                <View style={shoppingScheduleStyle.containerDetailFood}>
-                  <Text style={shoppingScheduleStyle.textNameFood}>
-                    {item.name}
-                  </Text>
-                  <Text style={shoppingScheduleStyle.textTypeFood}>
-                    {item.type}
-                  </Text>
-                </View>
-              </View>
-              {/* btn Số lượng */}
-              <View style={shoppingScheduleStyle.containerInputCateShopping}>
-                <TextInput
-                  style={shoppingScheduleStyle.inputShopping}
-                  placeholder="Số lượng"
-                  placeholderTextColor={colors.white60}
-                  value={inputTextShopping[item.id]} // Giá trị riêng biệt cho mỗi item
-                  onChangeText={(value) => handleInputChange(item.id, value)} // Cập nhật giá trị tương ứng
-                />
-                <View style={shoppingScheduleStyle.countFood}>
-                  <View style={shoppingScheduleStyle.lineHeight}></View>
-                  <TouchableOpacity
-                    style={shoppingScheduleStyle.countUnit}
-                    onPress={() => {
-                      // Toggle visibility cho phần tử hiện tại
-                      setVisibleUnitIndex(
-                        visibleUnitIndex === index ? null : index
-                      );
-                    }}
-                  >
-                    <Text style={shoppingScheduleStyle.unitText}>
-                      {selectedUnit}
+        <View style={shoppingScheduleStyle.containerListCateShopping}>
+          {items.map((item, index) => {
+            // Tìm tên danh mục dựa trên category_id của item
+            const categoryName = categories.find(
+              (i) => i.id === item.category_id
+            )?.name;
+
+            return (
+              <View
+                key={item.id}
+                style={[
+                  shoppingScheduleStyle.containerItemCateShopping,
+                  index === items.length - 1 && { marginBottom: 20 },
+                  visibleUnitIndex === index && { zIndex: 10 }, // Đảm bảo zIndex cao cho item hiện tại
+                ]}
+              >
+                {/* Ảnh và tên */}
+                <View style={shoppingScheduleStyle.containerImgNameFood}>
+                  <Image
+                    source={require("@/assets/images/shopping/NoItemFood.png")}
+                    style={shoppingScheduleStyle.iconNoItemFood}
+                  />
+                  <View style={shoppingScheduleStyle.containerDetailFood}>
+                    <Text style={shoppingScheduleStyle.textNameFood}>
+                      {item.name}
                     </Text>
-                    <Image
-                      source={require("@/assets/images/shopping/arrow_bottom.png")}
-                    />
-                    {/* Hiển thị box lựa chọn đơn vị nếu isUnitBoxVisible là true */}
-                    {visibleUnitIndex === index && (
-                      <View style={shoppingScheduleStyle.unitBox}>
-                        {units.map((unit) => (
-                          <TouchableOpacity
-                            key={unit}
-                            style={shoppingScheduleStyle.unitItem}
-                            onPress={() => handleUnitPress(unit)}
-                          >
-                            <Text style={shoppingScheduleStyle.unitText}>
-                              {unit}
-                            </Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
-                    )}
-                  </TouchableOpacity>
+                    <Text style={shoppingScheduleStyle.textTypeFood}>
+                      {categoryName}
+                    </Text>
+                  </View>
+                </View>
+                {/* btn Số lượng */}
+                <View style={shoppingScheduleStyle.containerInputCateShopping}>
+                  <TextInput
+                    style={shoppingScheduleStyle.inputShopping}
+                    placeholder="Số lượng"
+                    placeholderTextColor={colors.white60}
+                    keyboardType="numeric" // Hiển thị bàn phím số
+                    value={inputTextShopping[item.id]} // Giá trị riêng biệt cho mỗi item
+                    onChangeText={(value) => {
+                      // Chỉ chấp nhận số
+                      const numericValue = value.replace(/[^0-9]/g, ""); // Loại bỏ các ký tự không phải số
+                      handleInputChange(item.id, numericValue); // Cập nhật giá trị
+                    }}
+                  />
+                  <View style={shoppingScheduleStyle.countFood}>
+                    <View style={shoppingScheduleStyle.lineHeight}></View>
+                    <TouchableOpacity
+                      style={shoppingScheduleStyle.countUnit}
+                      onPress={() => {
+                        // Toggle visibility cho phần tử hiện tại
+                        setVisibleUnitIndex(
+                          visibleUnitIndex === index ? null : index
+                        );
+                      }}
+                    >
+                      <Text style={shoppingScheduleStyle.unitText}>
+                        {selectedUnits[item.id] || ""}
+                      </Text>
+                      <Image
+                        source={require("@/assets/images/shopping/arrow_bottom.png")}
+                      />
+                      {/* Hiển thị box lựa chọn đơn vị nếu isUnitBoxVisible là true */}
+                      {visibleUnitIndex === index && (
+                        <View style={[shoppingScheduleStyle.unitBox]}>
+                          {item.list_units.map((unit) => (
+                            <TouchableOpacity
+                              key={unit}
+                              style={shoppingScheduleStyle.unitItem}
+                              onPress={() => handleUnitPress(item.id, unit)}
+                            >
+                              <Text style={shoppingScheduleStyle.unitText}>
+                                {unit}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
-        </ScrollView>
+            );
+          })}
+        </View>
+      </View>
+      <View style={shoppingScheduleStyle.containerButtonSuccess}>
+        <TouchableOpacity
+          style={shoppingScheduleStyle.ButtonSuccess}
+          onPress={() => onComplete(items, selectedUnits, inputTextShopping)}
+        >
+          <Text style={shoppingScheduleStyle.textButtonSuccess}>
+            Hoàn Thành
+          </Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

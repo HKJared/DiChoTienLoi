@@ -6,6 +6,7 @@ const shoppingScheduleStyle = StyleSheet.create({
     gap: 16,
     display: "flex",
     flexDirection: "column",
+    paddingBottom: 100,
   },
   containerCalenderEdit: {
     padding: 10,
@@ -148,6 +149,12 @@ const shoppingScheduleStyle = StyleSheet.create({
     width: 32,
     height: 32,
   },
+  imageCategories: {
+    width: 72,
+    height: 72,
+    overflow: "hidden",
+    resizeMode: "cover",
+  },
   containerImgNameFood: {
     display: "flex",
     flexDirection: "row",
@@ -157,6 +164,26 @@ const shoppingScheduleStyle = StyleSheet.create({
     gap: 4,
     display: "flex",
     flexDirection: "column",
+  },
+  containerButtonSuccess: {
+    marginTop: 20,
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  ButtonSuccess: {
+    height: 32,
+    paddingHorizontal: 24,
+    backgroundColor: colors.bluebg,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  textButtonSuccess: {
+    fontSize: 16,
+    fontWeight: "regular",
+    color: colors.white,
   },
   textNameFood: {
     fontFamily: "Roboto",
@@ -227,7 +254,7 @@ const shoppingScheduleStyle = StyleSheet.create({
   },
   containerListCateShopping: {
     zIndex: 0,
-    height: 386,
+    // height: ,
     width: "100%",
     paddingVertical: 10,
     display: "flex",
@@ -245,6 +272,7 @@ const shoppingScheduleStyle = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    position: "relative",
   },
   containerInputCateShopping: {
     gap: 4,
@@ -285,19 +313,22 @@ const shoppingScheduleStyle = StyleSheet.create({
     paddingRight: 15,
   },
   unitBox: {
-    backgroundColor: "#FFFFFFF",
-    position: "relative",
-    top: 40, // Điều chỉnh vị trí của box tùy theo yêu cầu
-    left: -50,
     backgroundColor: "white",
+    position: "absolute",
+    top: 30,
+    left: -10,
+    zIndex: 1000, // Tăng zIndex để đảm bảo luôn nằm trên các thành phần khác
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 5,
-    width: 50, // Điều chỉnh chiều rộng của box
-    zIndex: 2,
-    pointerEvents: "auto",
-    opacity: 1,
+    width: 70, // Điều chỉnh chiều rộng nếu cần
+    elevation: 5, // Dành cho Android để nâng box lên
+    shadowColor: "#000", // Dành cho iOS để tạo đổ bóng
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
+
   unitItem: {
     padding: 10,
   },
