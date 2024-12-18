@@ -1,30 +1,18 @@
 import axios from "axios";
 import { getToken } from "../services/storageService";
 import BASE_HOST_URL from "./baseHostUrl";
+import NetInfo from '@react-native-community/netinfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-// const getToken = async () => {
-
-//   try {
-//     const response = await axios.post(BASE_HOST_URL + "/login", {
-//       account: { username, password }
-//     }, {
-//       headers: { "Content-Type": "application/json" }
-//     });
-
-//     const { jwt } = response.data;
-//     console.log("Login successful! JWT:", jwt);
-
-//     return jwt;
-//   } catch (error) {
-//     console.error("Error logging in:", error);
-//     return null;
-//   }
-// };
-
-
-const getRecipeCategories = async (jwt) => {
+const getRecipeCategories = async () => {
   try {
+
+    const jwt = await getToken();
+          if (!jwt) {
+            console.error("Failed to get JWT");
+            return;
+          }
+
     const response = await axios.get(BASE_HOST_URL+ "api/user/recipe-categories", {
       headers: {
         "Content-Type": "application/json",
@@ -72,8 +60,14 @@ const searchRecipe = async (keyword, page, itemsPerPage) => {
 
 
 
-const getRcipeDetail = async (jwt, recipe_id) => {
+const getRcipeDetail = async (recipe_id) => {
   try {
+    const jwt = await getToken();
+          if (!jwt) {
+            console.error("Failed to get JWT");
+            return;
+          }
+
     const response = await axios.get(`${BASE_HOST_URL}api/user/recipe?recipe_id=${recipe_id}`, {
       headers: {
         "Content-Type": "application/json",
@@ -90,9 +84,15 @@ const getRcipeDetail = async (jwt, recipe_id) => {
 }
 
 
-const updatedData = async (jwt, recipe_id, newData) => {
+const updatedData = async (recipe_id, newData) => {
 
   try {
+    const jwt = await getToken();
+          if (!jwt) {
+            console.error("Failed to get JWT");
+            return;
+          }
+
     const response = await axios.put(
       `${BASE_HOST_URL}api/user/recipe`,
       {
@@ -117,9 +117,15 @@ const updatedData = async (jwt, recipe_id, newData) => {
 };
 
 
-const CreateRecipeDetail = async (jwt, newRecipe) => {
+const CreateRecipeDetail = async (newRecipe) => {
 
   try {
+    const jwt = await getToken();
+          if (!jwt) {
+            console.error("Failed to get JWT");
+            return;
+          }
+
     const response = await axios.post(
       `${BASE_HOST_URL}api/user/recipe`,
       {
@@ -163,8 +169,14 @@ const getMarketplaceitem = async () =>{
 };
 
 
-const deleteRecipe = async (jwt, recipeId) =>{
+const deleteRecipe = async (recipeId) =>{
   try {
+    const jwt = await getToken();
+          if (!jwt) {
+            console.error("Failed to get JWT");
+            return;
+          }
+
     const response = await axios.delete(
       `${BASE_HOST_URL}api/user/recipe`,
   
@@ -188,12 +200,98 @@ const deleteRecipe = async (jwt, recipeId) =>{
 };
 
 
+// ########################## Local Storage ##############################
 
-(async () => {
-  const jwt = await getToken();
-  const recipeCategoryData = await getRecipeCategories(jwt);
-  console.log('recipeCategoryData', recipeCategoryData)
-})();
+// check network
+const checkNetworkStatus = async () => {
+  const state = await NetInfo.fetch();
+  return state.isConnected;
+};
 
 
-export {getToken, getRecipeCategories, getRecipe, getRcipeDetail, searchRecipe, updatedData, CreateRecipeDetail, getMarketplaceitem, deleteRecipe} 
+// get data
+const getLocalData = async (key) => {
+  try {
+    const storedData = await AsyncStorage.getItem(key);
+    const parsedData = storedData ? JSON.parse(storedData) : [];
+    console.log('Local data:', parsedData);
+    return parsedData;
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu:', error);
+    return [];
+  }
+};
+
+
+const storeCategoriesData = async (key, categoriesData) => {
+  try {
+    await AsyncStorage.setItem(key, JSON.stringify(categoriesData));
+    console.log('Đã lưu dữ liệu categoriesList và local');
+  } catch (error) {
+    console.error('Lỗi khi lưu dữ liệu vào AsyncStorage:', error);
+  }
+};
+
+
+
+
+
+const storeRecipeData = async (key, newRecipe) => {
+  try {
+    const storedData = await AsyncStorage.getItem(key);
+    let parsedData = [];
+
+    if (storedData) {
+      parsedData = JSON.parse(storedData); 
+    }
+
+    const isDuplicate = parsedData.some((recipe) => recipe.id === newRecipe.id);
+    if (isDuplicate) {
+      return;  
+    }
+
+    parsedData.push(newRecipe);
+    
+    await AsyncStorage.setItem(key, JSON.stringify(parsedData));
+
+    console.log('newRecipe:', parsedData);
+  } catch (error) {
+    console.error('Lỗi khi lưu dữ liệu:', error);
+  }
+};
+
+
+
+const viewAllLocalData = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys(); 
+    const stores = await AsyncStorage.multiGet(keys);
+    const allData = stores.map(([key, value]) => ({ key, value: JSON.parse(value) }));
+    console.log('All AsyncStorage Data:', allData);
+  } catch (error) {
+    console.error('Error fetching AsyncStorage data:', error);
+  }
+};
+
+
+const CATEGORIES_KEY = 'CategoriesData'
+const SAVE_RECIPE_KEY = 'SaveRecipeData';
+const MY_RECIPE_KEY = 'MyRecipeData';
+
+
+export {CATEGORIES_KEY,SAVE_RECIPE_KEY,MY_RECIPE_KEY,
+        viewAllLocalData,
+        getLocalData,
+        storeCategoriesData,    
+        checkNetworkStatus, 
+        getRecipeCategories, 
+        getRecipe, 
+        getRcipeDetail, 
+        searchRecipe, 
+        updatedData, 
+        CreateRecipeDetail, 
+        getMarketplaceitem, 
+        deleteRecipe,
+        storeRecipeData,
+
+      } 

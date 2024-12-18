@@ -42,6 +42,7 @@ export default function CategoryList({ categoriesData, layout, onSelectCategory 
       ItemSeparatorComponent={ItemSeparator}
       key={numColumns.toString()}
       columnWrapperStyle={columnWrapperStyle}
+      showsVerticalScrollIndicator={false} 
     />
   );
 }

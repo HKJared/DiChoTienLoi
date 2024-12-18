@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,  Modal, Button, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-
 import colorlibrary from '../../../assets/color/colorlibrary';
 import Making from './Making';
-import {getToken, getRcipeDetail} from '../../../api/apiRecipe';
-
+import {getRcipeDetail, checkNetworkStatus, storeRecipeData, SAVE_RECIPE_KEY} from '../../../api/apiRecipe';
 
 export default function RecipeCard({ route, navigation }) {
 
@@ -17,23 +15,41 @@ export default function RecipeCard({ route, navigation }) {
     Alert.alert('Thành công', `Bạn đã đánh giá ${rating} sao!`);
   };
 
+  const handleSaveRecipe = async (key, item) => {
+    try {
+      await storeRecipeData(key, item);
+      console.log('Item vừa thêm vào là:', item)
+      Alert.alert('Thành công', 'Công thức đã được lưu thành công!');
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi lưu công thức.');
+    }
+  };
+  
   const fetchRecipeDetail = async () => {
     try {
-      const jwt = await getToken(); 
-      if (jwt) {
+
+      const isOnline = await checkNetworkStatus();
+    
+      if (isOnline){
         console.log("Fetching recipeDetail...");
-        const { 'recipe': responseData } = await getRcipeDetail(jwt, item_param.id); 
+        const { 'recipe': responseData } = await getRcipeDetail(item_param.id); 
+        console.log('responseData:', responseData)
         setItem(responseData); 
-      } else {
-        console.error("Failed to get JWT");
       }
+      else{
+        console.log('item_param:', item_param)
+        setItem(item_param);
+      }
+
     } catch (error) {
       console.error("Error in:", error.message);
     }
+
+
   };
 
   useEffect(() => {
-    fetchRecipeDetail();
     const unsubscribe = navigation.addListener('focus', () => {
       fetchRecipeDetail();
     });
@@ -44,14 +60,14 @@ export default function RecipeCard({ route, navigation }) {
   if (!item) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color={colorlibrary['--color-blue-bg']} />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );  
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container}   showsVerticalScrollIndicator={false} >
       <View style={styles.card}>
         <View style={styles.imageContainer}>
           <Image
@@ -84,7 +100,7 @@ export default function RecipeCard({ route, navigation }) {
             <TouchableOpacity style={styles.buttonYellow}   onPress={() => setModalVisible(true)}>
               <Text style={styles.buttonText}>Đánh giá</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonGreen}>
+            <TouchableOpacity style={styles.buttonGreen}  onPress={() => handleSaveRecipe(SAVE_RECIPE_KEY, item)}>
               <Text style={styles.buttonText}>Thêm vào kho công thức</Text>
             </TouchableOpacity>
           </View>
@@ -514,7 +530,7 @@ const styles = StyleSheet.create({
      gap: 20
    },
    voteButton: {
-    backgroundColor: colorlibrary['--color-bg2'],
+    backgroundColor: colorlibrary['--color-blue-bg'],
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 5,

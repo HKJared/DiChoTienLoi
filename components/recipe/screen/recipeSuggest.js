@@ -74,6 +74,7 @@ export default function RecipeSuggest({
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator= {false}
         />
       </View>
     </View>

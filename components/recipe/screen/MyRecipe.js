@@ -4,23 +4,8 @@ import colorlibrary from "../../../assets/color/colorlibrary";
 import RecipeItem from "../tab/RecipeItem";
 import { useIsFocused } from '@react-navigation/native';  
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {deleteRecipe, updatedData, getToken} from '../../../api/apiRecipe'
+import {deleteRecipe, MY_RECIPE_KEY, getLocalData, checkNetworkStatus} from '../../../api/apiRecipe'
 
-
-const getRecipeData = async (key) => {
-  try {
-    const storedData = await AsyncStorage.getItem(key);
-    const parsedData = storedData ? JSON.parse(storedData) : [];
-    console.log('Local data:', parsedData);
-    return parsedData;
-  } catch (error) {
-    console.error('Lỗi khi lấy dữ liệu:', error);
-    return [];
-  }
-};
-
-
-const MY_RECIPE_KEY = 'MyRecipeData';
 
 export default function MyRecipe({ route,  navigation }) {
                                        
@@ -32,9 +17,8 @@ export default function MyRecipe({ route,  navigation }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getRecipeData(MY_RECIPE_KEY);
+      const data = await getLocalData(MY_RECIPE_KEY);
       setMyRecipeData(data); 
-      console.log('My data', data.ingredients)
 
     };
     if (isFocused) {
@@ -43,27 +27,29 @@ export default function MyRecipe({ route,  navigation }) {
 
   }, [isFocused]); 
 
-    
+  
   const onDeleteRecipe = async (key, item) => {
     const id = item.id
-    try {
+    const isOnline = await checkNetworkStatus();
+    if(! isOnline) {
+      Alert.alert('Thông báo', 'Vui lòng kết nối internet!');
+      return;
+    }
 
-      const jwt = await getToken();
-      if (!jwt) {
-        console.error("Failed to get JWT");
-        return;
-      }
-      const response = await deleteRecipe(jwt, id);
+    try { 
+      const response = await deleteRecipe(id);
+      
       if (!response){
         return;
       }
+      
 
       const storedData = await AsyncStorage.getItem(key);
       let parsedData = storedData ? JSON.parse(storedData) : [];
-
+  
       const updatedData = parsedData.filter(item => item.id !== id);
       await AsyncStorage.setItem(key, JSON.stringify(updatedData));
-
+  
       setMyRecipeData(updatedData);
       
       Alert.alert('Sucessfully', `Đã xóa công thức ${item.name}`);
@@ -72,7 +58,6 @@ export default function MyRecipe({ route,  navigation }) {
       console.error('Lỗi khi xóa dữ liệu:', error);
     }
   };
-
 
 
   return (
@@ -108,6 +93,7 @@ export default function MyRecipe({ route,  navigation }) {
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
       />
       </View>
     </View>

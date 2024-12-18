@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 // import Icon from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Ionicons'
 
-const Header = ({ title, onBackPress }) => {
+const Header = ({ title, onBackPress }: { title: string; onBackPress: () => void }) => {
 
   return (
     <View style={styles.headerContainer}>
@@ -17,7 +17,7 @@ const Header = ({ title, onBackPress }) => {
         <TouchableOpacity style={styles.headerNoti}>
           <Icon name="notifications-outline" size={28} color="#0057a3" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.headerSet}>
+        <TouchableOpacity>
           <Icon name="settings-outline" size={28} color="#0057a3" />
         </TouchableOpacity>
       </View>

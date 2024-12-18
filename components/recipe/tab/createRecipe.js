@@ -8,41 +8,16 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
-  FlatList,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CreateRecipeDetail, getToken, getMarketplaceitem} from '../../../api/apiRecipe';
+
+import { CreateRecipeDetail, getMarketplaceitem, MY_RECIPE_KEY, storeRecipeData} from '../../../api/apiRecipe';
 import RNPickerSelect from 'react-native-picker-select';
-
-const MY_RECIPE_KEY = 'MyRecipeData';
-
 
 export default  CreateRecipe = ({ route, navigation }) => {
   const [marketplaceItem, setMarketplaceItem] = useState([])
   const [categoriesId, setCategoriesId] = useState(1);
   const {categoriesData: categoriesData} = route.params
 
-  const storeRecipeData = async (key, newRecipe) => {
-    try {
-      const storedData = await AsyncStorage.getItem(key);
-      let parsedData = [];
-  
-      if (storedData) {
-        parsedData = JSON.parse(storedData); 
-      }
-
-      parsedData.push(newRecipe);
-     
-      await AsyncStorage.setItem(key, JSON.stringify(parsedData));
-  
-      console.log('Dữ liệu đã được thêm:', parsedData);
-    } catch (error) {
-      console.error('Lỗi khi lưu dữ liệu:', error);
-    }
-  };
-  
-  
- 
 
   useEffect(() => {
     const getmkplaceItem = async () => {
@@ -141,11 +116,8 @@ export default  CreateRecipe = ({ route, navigation }) => {
     const validationError = validateData();
     if (validationError) return Alert.alert('Error', validationError);
     
-    try {
-      const jwt = await getToken();
-      if (!jwt) return console.log('Failed to get JWT');
-      
-      const response = await CreateRecipeDetail(jwt, newData);
+    try {    
+      const response = await CreateRecipeDetail(newData);
       console.log('data::::',response.data.new_recipe)
       if (response.status === 200) {
         console.log('new recipe:', response.data.new_recipe)
@@ -198,7 +170,7 @@ export default  CreateRecipe = ({ route, navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} >
 
       {/* Recipe Details */}
         <Text style={styles.label}>Name</Text>
@@ -279,7 +251,7 @@ export default  CreateRecipe = ({ route, navigation }) => {
         < View style={{width: '100%'}}>
         <TextInput
             style={styles.inputLarge}
-            placeholder="cost_estimate"
+            placeholder="cost"
             value={newData.cost_estimate ? newData.cost_estimate.toString() : ''}
             onChangeText={(text) => {
               const parsedValue = parseInt(text, 10);

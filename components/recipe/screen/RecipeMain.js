@@ -6,14 +6,22 @@ import colorlibrary from "../../../assets/color/colorlibrary";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import RecipeCard from "../tab/recipeCard";
-
 import Header from "../../Header";
-import { useNavigation } from '@react-navigation/native';
 import CreateRecipe from "../tab/createRecipe";
 import  UpdateRecipe from "../tab/UpdateRecipe";
 import MyRecipe from './MyRecipe'
 
-import { getToken, getRecipeCategories, getRecipe, searchRecipe } from "../../../api/apiRecipe";
+import {getRecipeCategories, 
+        getRecipe, 
+        searchRecipe, 
+        checkNetworkStatus,
+        SAVE_RECIPE_KEY,
+        CATEGORIES_KEY,
+        getLocalData,
+        storeCategoriesData,
+        viewAllLocalData,
+        } from "../../../api/apiRecipe";
+
 
 
 const Stack = createStackNavigator(); 
@@ -25,7 +33,9 @@ export default function Final_screen(){
     <NavigationContainer>
         <Stack.Navigator
             screenOptions={({ route, navigation }) => ({
-              header: () => <Header title={route.name} onBackPress={() => {navigation.goBack()}} />,
+              header: () => <Header title={route.name} onBackPress={() => {if(navigation.canGoBack()){
+                navigation.goBack()}
+              }} />,
             })}
           >
             <Stack.Screen name="Nấu ăn" component={RecipeMain} />
@@ -40,49 +50,71 @@ export default function Final_screen(){
 }
 
 function RecipeMain({navigation}) {
-
   const [isSearch, setIsSearch] = useState(false); 
   const [searchText, setSearchText] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(null); 
   const [filteredRecipes, setFilteredRecipes] = useState(null); 
   const [categoriesData, setCategoriesData] = useState(null)
   const [myInfo, setMyInfo] = useState()
   
-
   const handleCategorySelect = async (category) => {
-    setSelectedCategory(category);
-    const recipeFilterData = await getRecipe(category.id);
-    setFilteredRecipes(recipeFilterData['recipes']);
+    const isOnline = await checkNetworkStatus();
+    if (isOnline) {
+      const recipeFilterData = await getRecipe(category.id);
+      setFilteredRecipes(recipeFilterData['recipes']);
+    }
+    else{
+        Alert.alert('Thông báo', 'Vui lòng kết nối internet!')
+    }
+ 
   };
+
 
   const getFullData = async () => {
     try {
-      const jwt = await getToken();
-      if (!jwt) {
-        console.error("Failed to get JWT");
-        return;
+      console.log("Fetching data...");
+      
+      let categoriesList;
+      let allRecipes = [];
+  
+      const isOnline = await checkNetworkStatus();
+      if (isOnline) {
+        console.log("Fetching categories from API...");
+        categoriesList = await getRecipeCategories();
+        
+        if (categoriesList){
+          console.log('hoho:',categoriesList)
+          await storeCategoriesData(CATEGORIES_KEY, categoriesList);
+        }
+ 
+        const recipesPromises = categoriesList.map(async (category) => {
+          const categoryDetail = await getRecipe(category.id);
+          if (categoryDetail.totalCount > 0) {
+            category.active = true;
+            return categoryDetail.recipes;
+          } else {
+            category.active = false;
+            return [];
+          }
+        });
+
+        allRecipes = (await Promise.all(recipesPromises)).flat();
+
+      } else {
+        console.log("No network. Loading data from local storage...");
+        allRecipes = await getLocalData(SAVE_RECIPE_KEY);
+        categoriesList = await getLocalData(CATEGORIES_KEY)
+
+
       }
   
-      console.log("Fetching categories...");
-      const categoriesList = await getRecipeCategories(jwt);
-  
-      const recipesPromises = categoriesList.map(async (category) => {
-        const categoryDetail = await getRecipe(category.id);
-        if (categoryDetail.totalCount > 0) {
-          category.active = true;
-          return categoryDetail.recipes;
-        } else {
-          category.active = false;
-          return [];
-        }
-      });
-  
-      const allRecipes = (await Promise.all(recipesPromises)).flat();
+      // Cập nhật state
       setCategoriesData(categoriesList);
-      console.log('categories list:', categoriesList)
       setFilteredRecipes(allRecipes);
+      
+      console.log("Data loaded successfully.");
+  
     } catch (error) {
-      console.error("Error:", error.message);
+      console.error("Error fetching data:", error.message);
     }
   };
 

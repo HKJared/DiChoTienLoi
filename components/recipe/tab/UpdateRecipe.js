@@ -10,13 +10,9 @@ import {
   Alert,
 } from 'react-native';
 
-import { updatedData, getToken, getMarketplaceitem } from '../../../api/apiRecipe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getMarketplaceitem, MY_RECIPE_KEY, updatedData, checkNetworkStatus } from '../../../api/apiRecipe';
 import RNPickerSelect from 'react-native-picker-select';
-
-
-const MY_RECIPE_KEY = 'MyRecipeData';
-
 
 
 export default  UpdateRecipe = ({ route , navigation }) => {
@@ -41,8 +37,6 @@ export default  UpdateRecipe = ({ route , navigation }) => {
     if (item) {
       setNewData({
         ...item,  
-        // ingredients: item.ingredients ? JSON.parse(item.ingredients) : [],
-        // instructions: item.instructions ? JSON.parse(item.instructions) : [],
         cost_estimate: parseInt(item.cost_estimate) ? parseInt(item.cost_estimate) : 0,
       });
     }
@@ -127,57 +121,6 @@ export default  UpdateRecipe = ({ route , navigation }) => {
     return null;
   };
 
-
-  const handleUpdateRecipe = async () => {
-    const validationError = validateData();
-    if (validationError) {
-      Alert.alert('Error', validationError);
-      return;
-    }
-  
-    try {
-      const jwt = await getToken();
-      if (!jwt) {
-        console.log('Failed to get JWT');
-        return;
-      }
-
-      const result = await updatedData(jwt, item.id, newData);
-
-      if (result.status === 200) {
-       
-        const storedData = await AsyncStorage.getItem(MY_RECIPE_KEY);
-        console.log('storeData',storedData)
-
-        let parsedData = storedData ? JSON.parse(storedData) : [];
-        console.log('parsedData',parsedData)
-        console.log('newData:', newData)
-
-        const formattedData = {
-          ...newData,
-        };
-
-        const updatedData = parsedData.map((recipe_item) =>
-          recipe_item.id === item.id ? { ...recipe_item, ...formattedData } : recipe_item
-        );
-
-        await AsyncStorage.setItem(MY_RECIPE_KEY, JSON.stringify(updatedData));
-        
-
-        Alert.alert('Success', `Đã cập nhật công thức nấu ăn ${item.name}`);
-
-        navigation.goBack();
-        
-      } else {
-        console.log('Failed to update recipe. Response:', result);
-      }
-    } catch (error) {
-      console.error('Error while updating recipe:', error);
-      Alert.alert('Error', 'Failed to update recipe');
-    }
-  };
-  
-
   const categoriesDropdownData = categoriesData.map(item => ({
     label: item.name,
     value: item.id,  
@@ -217,9 +160,60 @@ export default  UpdateRecipe = ({ route , navigation }) => {
 
   };
 
+  
+  const handleUpdateRecipe = async (key, item) => {
+    const validationError = validateData();
+    const isOnline = checkNetworkStatus();
+    if (validationError) {
+      Alert.alert('Error', validationError);
+      return;
+    }
+
+    if(!isOnline){
+       Alert.alert('Thông báo', 'Vui lòng kết nối internet!');
+       return;
+    }
+
+    try {
+
+
+      const result = await updatedData(item.id, newData);
+
+      if (result.status === 200) {
+        
+        const storedData = await AsyncStorage.getItem(key);
+        console.log('storeData',storedData)
+
+        let parsedData = storedData ? JSON.parse(storedData) : [];
+        console.log('parsedData',parsedData)
+        console.log('newData:', newData)
+
+        const formattedData = {
+          ...newData,
+        };
+
+        const updatedData = parsedData.map((recipe_item) =>
+          recipe_item.id === item.id ? { ...recipe_item, ...formattedData } : recipe_item
+        );
+
+        await AsyncStorage.setItem(key, JSON.stringify(updatedData));
+        
+
+        Alert.alert('Success', `Đã cập nhật công thức nấu ăn ${item.name}`);
+
+        navigation.goBack();
+        
+      } else {
+        console.log('Failed to update recipe. Response:', result);
+      }
+    } catch (error) {
+      console.error('Error while updating recipe:', error);
+      Alert.alert('Error', 'Failed to update recipe');
+    }
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}   showsVerticalScrollIndicator={false} >
 
       {/* Recipe Details */}
         <Text style={styles.label}>Name</Text>
@@ -299,7 +293,7 @@ export default  UpdateRecipe = ({ route , navigation }) => {
         < View style={{width: '100%'}}>
         <TextInput
             style={styles.inputLarge}
-            placeholder="cost_estimate"
+            placeholder="cost"
             value={newData.cost_estimate ? newData.cost_estimate.toString() : ''}
             onChangeText={(text) => {
               const parsedValue = parseInt(text, 10);
@@ -479,7 +473,7 @@ export default  UpdateRecipe = ({ route , navigation }) => {
       </TouchableOpacity>
 
       {/* Buttons */}
-      <TouchableOpacity style={styles.addButton} onPress={handleUpdateRecipe}>
+      <TouchableOpacity style={styles.addButton} onPress={() => handleUpdateRecipe(MY_RECIPE_KEY, item)}>
         <Text style={styles.addButtonText}>Update Recipe</Text>
       </TouchableOpacity>
     </ScrollView>
