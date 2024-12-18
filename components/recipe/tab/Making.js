@@ -1,35 +1,34 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image } from 'react-native';
-import MarketItem from './marketItem';
-import colorlibrary from './colorlibrary';
+import colorlibrary from '../../../assets/color/colorlibrary';
 
-export default function Making({ stepNames, descriptions }) {
-    return (
-      <View style={styles.section}>
-        <View style={styles.sectionTitle}>
-          <Text style={styles.sectionText}>Cách làm</Text>
-          <Image style={styles.sectionIcon} source={require('../assets/caret-down.png')} />
-        </View>
-  
-        <View style={styles.stepList}>
-          {stepNames.map((step, index) => (
-            <Step 
-              key={index} 
-              name={`Bước ${index + 1}: ${step}`} 
-              description={descriptions[index]} 
-            />
-          ))}
-        </View>
+export default function Making({ instructions }) {
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionTitle}>
+        <Text style={styles.sectionText}>Cách làm</Text>
+        <Image style={styles.sectionIcon} source={require('../../../assets/images/recipes/caret-down.png')} />
       </View>
-    );
-  }
+
+      <View style={styles.stepList}>
+        {instructions.map((instruction, index) => (
+          <Step
+            key={instruction.step} // Sử dụng `step` làm key vì đây là giá trị duy nhất
+            name={`Bước ${instruction.step}: ${instruction.name}`}
+            description={instruction.detail}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
   
 
 function Step({name, description}){
     return(
       <View style={styles.step}>
         <View style={styles.stepName}>
-            <Image style={styles.stepIcon} source={require('../assets/layers.png')} />
+            <Image style={styles.stepIcon} source={require('../../../assets/images/recipes/layers.png')} />
             <Text style={styles.stepTitle}>{name}</Text>
         </View>
             
@@ -42,13 +41,7 @@ function Step({name, description}){
   
 
 const styles = StyleSheet.create({
-  ingredientList: {
-    flex: 0,
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    gap: 4,
-  },
+ 
   section: {
     width: '100%',
     gap: 10,

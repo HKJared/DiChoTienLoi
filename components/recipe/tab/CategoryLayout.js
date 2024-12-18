@@ -1,26 +1,19 @@
 import React, { useState } from "react";
-import { StyleSheet, FlatList, View, TouchableOpacity } from "react-native";
-import Category from "./Category"; 
+import { StyleSheet, FlatList, View, TouchableOpacity, ImageBackground, Text } from "react-native";
+import colorlibrary from '../../../assets/color/colorlibrary';
 
-export default function CategoryList({ categories, layout }) {
-  const [selectedCategory, setSelectedCategory] = useState(categories);
 
+export default function CategoryList({ categoriesData, layout, onSelectCategory }) {
   const renderItem = ({ item }) => (
-    <TouchableOpacity 
-      onPress={() => getItem(item)} 
-    >
+    <TouchableOpacity onPress={() => onSelectCategory(item)}>
       <Category 
         id={item.id}
-        text={item.text} 
-        imageSource={item.imageSource} 
+        name={item.name} 
+        image_url={item.image_url}
         active={item.active} 
       />
     </TouchableOpacity>
   );
-
-  const getItem = (item) => {
-    alert('Item id: ' + item.id + " Item name: " + item.text);
-  } 
 
   let numColumns = 1;
   let isHorizontal = false;
@@ -40,21 +33,44 @@ export default function CategoryList({ categories, layout }) {
 
   return (
     <FlatList
-      data={selectedCategory}
+      data={categoriesData}
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
       numColumns={numColumns}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={styles.category_list_container}
       horizontal={isHorizontal}
       ItemSeparatorComponent={ItemSeparator}
       key={numColumns.toString()}
-      columnWrapperStyle= {columnWrapperStyle}
+      columnWrapperStyle={columnWrapperStyle}
+      showsVerticalScrollIndicator={false} 
     />
   );
 }
 
+function Category({id, name, image_url, active }) {
+
+  return (
+    <View style={styles.category_container}>
+      <ImageBackground 
+        source={{ headers: { 'Accept': 'image/*'}, uri: image_url}} 
+        style={styles.background}
+      >
+        {!active &&  <View 
+          style={[
+            styles.overlay, 
+            { backgroundColor: active ? colorlibrary["--color-active"] : colorlibrary["--color-default"] }
+          ]}
+        />}
+
+        <Text style={styles.text}>{name}</Text>
+      </ImageBackground>
+    </View>
+  );
+}
+
+
 const styles = StyleSheet.create({
-  container: {
+  category_list_container: {
     paddingVertical: 0,
   },
  
@@ -67,4 +83,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center', 
   },
+
+
+  category_container: {
+    width: 116,
+    height: 32,
+    borderRadius: 16,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  background: {
+    width: '100%',
+    height: '200%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colorlibrary["--color-default"],
+  },
+  text: {
+    fontFamily: 'Roboto',
+    fontSize: 13,
+    color: colorlibrary["--white-100"],
+    fontWeight: '500', // medium
+  },
+
 });

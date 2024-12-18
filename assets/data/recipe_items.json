@@ -2,10 +2,11 @@
     {
       "id": 1,
       "name": "Thịt Ba Chỉ Xào Mướp",
+      "image_url": "https://mpng.hippopng.com/20180605/fww/kisspng-shashlik-shish-kebab-barbecue-pizza-doner-kebab-barbecue-grill-5b1673343ee314.8162542615281979402576.jpg",
       "category_id": 1,
       "description": "Món thịt ba chỉ xào mướp thơm ngon, dễ làm, thích hợp cho bữa cơm gia đình.",
       "time": 30,
-      "servings": 4,
+      "serving": 4,
       "cost_estimate": 150000,
       "kcal": 350,
       "ingredients": [
@@ -59,10 +60,11 @@
     {
       "id": 2,
       "name": "Gà Nướng Mật Ong",
-      "category_id": 3,
+      "image_url": "https://mpng.hippopng.com/20180605/fww/kisspng-shashlik-shish-kebab-barbecue-pizza-doner-kebab-barbecue-grill-5b1673343ee314.8162542615281979402576.jpg",
+      "category_id": 1,
       "description": "Món gà nướng mật ong thơm ngon, dễ làm, thích hợp cho các bữa tiệc cuối tuần.",
       "time": 45,
-      "servings": 4,
+      "serving": 4,
       "cost_estimate": 180000,
       "kcal": 400,
       "ingredients": [
@@ -121,10 +123,11 @@
     {
       "id": 3,
       "name": "Canh Chua Cá Lóc",
+      "image_url": "https://mpng.hippopng.com/20180605/fww/kisspng-shashlik-shish-kebab-barbecue-pizza-doner-kebab-barbecue-grill-5b1673343ee314.8162542615281979402576.jpg",
       "category_id": 6,
       "description": "Món canh chua cá lóc đậm đà, chua cay rất hợp cho những ngày hè nóng bức.",
       "time": 40,
-      "servings": 3,
+      "serving": 3,
       "cost_estimate": 120000,
       "kcal": 250,
       "ingredients": [
