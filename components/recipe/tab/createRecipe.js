@@ -10,25 +10,38 @@ import {
   ScrollView,
 } from 'react-native';
 
-import { CreateRecipeDetail, getMarketplaceitem, MY_RECIPE_KEY, storeRecipeData} from '../../../api/apiRecipe';
+import { CreateRecipeDetail, 
+       getMarketplaceitem, 
+       MY_RECIPE_KEY, 
+       storeRecipeData,
+       checkNetworkStatus,
+       getLocalData,
+       MARKETITEM_KEY,
+      
+      } from '../../../api/apiRecipe';
 import RNPickerSelect from 'react-native-picker-select';
 
 export default  CreateRecipe = ({ route, navigation }) => {
   const [marketplaceItem, setMarketplaceItem] = useState([])
-  const [categoriesId, setCategoriesId] = useState(1);
   const {categoriesData: categoriesData} = route.params
-
 
   useEffect(() => {
     const getmkplaceItem = async () => {
       try {
-        const marketplaceitem = await getMarketplaceitem();
-        setMarketplaceItem(marketplaceitem['items']); 
+        const isOnline = await checkNetworkStatus();
+
+        if (isOnline) {
+          const marketplaceitem = await getMarketplaceitem();
+          setMarketplaceItem(marketplaceitem['items']);
+        } else {
+          const marketplaceitem = await getLocalData(MARKETITEM_KEY);
+          setMarketplaceItem(marketplaceitem);
+        }
       } catch (error) {
         console.error("Error in:", error.message);
       }
     };
- 
+
     getmkplaceItem();
   }, []);
 
@@ -114,19 +127,25 @@ export default  CreateRecipe = ({ route, navigation }) => {
 
   const handleCreateRecipe = async () => {
     const validationError = validateData();
-    if (validationError) return Alert.alert('Error', validationError);
-    
+    if (validationError) return Alert.alert('Cảnh báo', validationError);
+  
+    const isOnline = await checkNetworkStatus();
+    if(!isOnline) { 
+        Alert.alert('Thông báo', 'Vui lòng kết nối internet!');
+        return;
+    }
+
     try {    
       const response = await CreateRecipeDetail(newData);
-      console.log('data::::',response.data.new_recipe)
+
       if (response.status === 200) {
         console.log('new recipe:', response.data.new_recipe)
         await storeRecipeData(MY_RECIPE_KEY, response.data.new_recipe);
-        Alert.alert('Success', `Recipe ${newData.name} created successfully!`);
+        Alert.alert('Thành công', `Công thức món ${newData.name} được tạo thành công!`);
         navigation.goBack()
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to create recipe');
+      Alert.alert('Lỗi', 'Tạo công thức không thành công');
     }
   };
 

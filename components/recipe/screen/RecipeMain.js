@@ -10,6 +10,9 @@ import Header from "../../Header";
 import CreateRecipe from "../tab/createRecipe";
 import  UpdateRecipe from "../tab/UpdateRecipe";
 import MyRecipe from './MyRecipe'
+import NetInfo from '@react-native-community/netinfo';
+import SaveRecipe from './SaveRecipe'
+
 
 import {getRecipeCategories, 
         getRecipe, 
@@ -18,8 +21,10 @@ import {getRecipeCategories,
         SAVE_RECIPE_KEY,
         CATEGORIES_KEY,
         getLocalData,
-        storeCategoriesData,
-        viewAllLocalData,
+        storeData,
+        getMarketplaceitem,
+        MARKETITEM_KEY
+
         } from "../../../api/apiRecipe";
 
 
@@ -33,9 +38,10 @@ export default function Final_screen(){
     <NavigationContainer>
         <Stack.Navigator
             screenOptions={({ route, navigation }) => ({
-              header: () => <Header title={route.name} onBackPress={() => {if(navigation.canGoBack()){
-                navigation.goBack()}
-              }} />,
+              header: () => <Header title={route.name}  
+              onBackPress={navigation.canGoBack() ? navigation.goBack : undefined} />,
+
+             
             })}
           >
             <Stack.Screen name="Nấu ăn" component={RecipeMain} />
@@ -43,6 +49,7 @@ export default function Final_screen(){
             <Stack.Screen name="Tạo công thức nấu ăn" component={CreateRecipe} />
             <Stack.Screen name="Công thức của tôi" component={MyRecipe} />
             <Stack.Screen name="Chỉnh sửa công thức" component={UpdateRecipe} />
+            <Stack.Screen name="Công thức đã lưu" component={SaveRecipe} />
         </Stack.Navigator>
     </NavigationContainer>
   
@@ -55,7 +62,9 @@ function RecipeMain({navigation}) {
   const [filteredRecipes, setFilteredRecipes] = useState(null); 
   const [categoriesData, setCategoriesData] = useState(null)
   const [myInfo, setMyInfo] = useState()
-  
+  const [networkStatus, setNetworkStatus] = useState(true)
+
+
   const handleCategorySelect = async (category) => {
     const isOnline = await checkNetworkStatus();
     if (isOnline) {
@@ -74,18 +83,26 @@ function RecipeMain({navigation}) {
       console.log("Fetching data...");
       
       let categoriesList;
-      let allRecipes = [];
+      let allRecipes;
+      let marketplaceItem;
   
       const isOnline = await checkNetworkStatus();
+    
       if (isOnline) {
         console.log("Fetching categories from API...");
+
         categoriesList = await getRecipeCategories();
         
         if (categoriesList){
-          console.log('hoho:',categoriesList)
-          await storeCategoriesData(CATEGORIES_KEY, categoriesList);
+          await storeData(CATEGORIES_KEY, categoriesList);
         }
- 
+
+        marketplaceItem = await getMarketplaceitem();
+        
+        if(marketplaceItem){
+          await storeData(MARKETITEM_KEY, marketplaceItem['items']);
+        }
+
         const recipesPromises = categoriesList.map(async (category) => {
           const categoryDetail = await getRecipe(category.id);
           if (categoryDetail.totalCount > 0) {
@@ -100,13 +117,10 @@ function RecipeMain({navigation}) {
         allRecipes = (await Promise.all(recipesPromises)).flat();
 
       } else {
-        console.log("No network. Loading data from local storage...");
         allRecipes = await getLocalData(SAVE_RECIPE_KEY);
         categoriesList = await getLocalData(CATEGORIES_KEY)
-
-
       }
-  
+
       // Cập nhật state
       setCategoriesData(categoriesList);
       setFilteredRecipes(allRecipes);
@@ -119,13 +133,21 @@ function RecipeMain({navigation}) {
   };
 
   useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setNetworkStatus(state.isConnected);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
+  useEffect(() => {
     getFullData();
     const unsubscribe = navigation.addListener('focus', () => {
       getFullData();
     });
-
     return () => unsubscribe();
-  }, [navigation]);
+  }, [navigation, networkStatus]);
 
 
   useEffect(() => {
@@ -139,7 +161,6 @@ function RecipeMain({navigation}) {
         }
       }
     };
-    print('isSearch in useEffect:', isSearch, searchText)
     searchRecipes();
   }, [isSearch, searchText]);
   
@@ -159,8 +180,10 @@ function RecipeMain({navigation}) {
           categoriesData={categoriesData} 
           filteredRecipes={filteredRecipes} 
           handleCategorySelect={handleCategorySelect}  
-          navigation={navigation}/> 
-
+          navigation={navigation}
+          loadAction = {getFullData}
+          /> 
+     
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => navigation.navigate('Công thức của tôi', {categoriesData, myInfo})}
@@ -173,7 +196,7 @@ function RecipeMain({navigation}) {
   );
 }
 
-const PannelHeader = ({ setIsSearch, setSearchText, navigation }) => {
+const PannelHeader = ({ setIsSearch, setSearchText}) => {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [localSearchText, setLocalSearchText] = useState("");
 
@@ -183,7 +206,7 @@ const PannelHeader = ({ setIsSearch, setSearchText, navigation }) => {
       setIsSearch(true); 
       setSearchText(localSearchText); 
     } else {
-      Alert.alert('Warning','Please type the keyword you want to search for!');
+      Alert.alert('Cảnh báo','Hãy tìm kiếm bằng từ khóa!');
     }
   };
 
@@ -374,5 +397,4 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: '#fff',
       },
- 
-});
+    });

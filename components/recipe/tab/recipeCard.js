@@ -18,7 +18,6 @@ export default function RecipeCard({ route, navigation }) {
   const handleSaveRecipe = async (key, item) => {
     try {
       await storeRecipeData(key, item);
-      console.log('Item vừa thêm vào là:', item)
       Alert.alert('Thành công', 'Công thức đã được lưu thành công!');
     } catch (error) {
       console.error(error);
@@ -32,21 +31,17 @@ export default function RecipeCard({ route, navigation }) {
       const isOnline = await checkNetworkStatus();
     
       if (isOnline){
-        console.log("Fetching recipeDetail...");
         const { 'recipe': responseData } = await getRcipeDetail(item_param.id); 
-        console.log('responseData:', responseData)
         setItem(responseData); 
+        console.log('item_param:', item_param);
       }
       else{
-        console.log('item_param:', item_param)
         setItem(item_param);
       }
 
     } catch (error) {
       console.error("Error in:", error.message);
     }
-
-
   };
 
   useEffect(() => {
@@ -54,7 +49,7 @@ export default function RecipeCard({ route, navigation }) {
       fetchRecipeDetail();
     });
     return () => unsubscribe();
-  }, [item_param]);
+  }, []);
 
 
   if (!item) {
@@ -112,7 +107,6 @@ export default function RecipeCard({ route, navigation }) {
       />
 
       <Making instructions={item.instructions}/>
-
 
       <RatingModal
         visible={isModalVisible}

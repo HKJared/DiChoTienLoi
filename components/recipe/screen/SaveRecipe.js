@@ -4,21 +4,19 @@ import colorlibrary from "../../../assets/color/colorlibrary";
 import RecipeItem from "../tab/RecipeItem";
 import { useIsFocused } from '@react-navigation/native';  
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {deleteRecipe, MY_RECIPE_KEY, getLocalData, checkNetworkStatus} from '../../../api/apiRecipe'
+import {deleteRecipe, SAVE_RECIPE_KEY, getLocalData, checkNetworkStatus} from '../../../api/apiRecipe'
 
 
-export default function MyRecipe({ route,  navigation }) {
+export default function SaveRecipe() {
                                        
-  const [title, setTitle] = useState('Danh sách công thức');
-  const [MyRecipeData, setMyRecipeData] = useState(); 
-  const {categoriesData: categoriesData} = route.params
+  const [SaveRecipeData, setSaveRecipeData] = useState(); 
 
   const isFocused = useIsFocused(); 
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getLocalData(MY_RECIPE_KEY);
-      setMyRecipeData(data); 
+      const data = await getLocalData(SAVE_RECIPE_KEY);
+      setSaveRecipeData(data); 
 
     };
     if (isFocused) {
@@ -30,27 +28,15 @@ export default function MyRecipe({ route,  navigation }) {
   
   const onDeleteRecipe = async (key, item) => {
     const id = item.id
-    const isOnline = await checkNetworkStatus();
-    if(! isOnline) {
-      Alert.alert('Thông báo', 'Vui lòng kết nối internet!');
-      return;
-    }
 
     try { 
-      const response = await deleteRecipe(id);
-      
-      if (!response){
-        return;
-      }
-      
-
       const storedData = await AsyncStorage.getItem(key);
       let parsedData = storedData ? JSON.parse(storedData) : [];
   
       const updatedData = parsedData.filter(item => item.id !== id);
       await AsyncStorage.setItem(key, JSON.stringify(updatedData));
   
-      setMyRecipeData(updatedData);
+      setSaveRecipeData(updatedData);
       
       Alert.alert('Thành công', `Đã xóa công thức ${item.name}`);
       
@@ -63,30 +49,20 @@ export default function MyRecipe({ route,  navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.title}>
-        <Text style={styles.titleText}>{title}</Text>
-        <View style= {styles.right_button}>
-          <TouchableOpacity onPress={() => navigation.navigate('Tạo công thức nấu ăn', {categoriesData})}>
-            <Text style={styles.iconText}>✍️</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate('Công thức đã lưu')}>
-            <Text style={styles.iconText}>📂</Text>
-          </TouchableOpacity>
-        </View>
-       
+        <Text style={styles.titleText}>{'Danh sách công thức đã lưu'}</Text>
+         
+          <Text style={styles.iconText}>📂</Text>
+        
       </View>
 
       <View style={styles.recipeItem}>
       <FlatList
-        data={MyRecipeData}
+        data={SaveRecipeData}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <RecipeItem data={item} />
             <View style={styles.overlay}>
-              <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Chỉnh sửa công thức', {item, categoriesData})}>
-                <Text style={styles.iconText}>✏️</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => onDeleteRecipe(MY_RECIPE_KEY, item)}>
+              <TouchableOpacity style={styles.iconButton} onPress={() => onDeleteRecipe(SAVE_RECIPE_KEY, item)}>
                 <Text style={styles.iconText}>🗑️</Text>
               </TouchableOpacity>
             </View>
@@ -224,10 +200,6 @@ const styles = StyleSheet.create({
     flex: 0,
     paddingBottom: 10
   },
-  right_button:{
-    flexDirection: 'row',
-    gap: 20,
-  }
 
 
 

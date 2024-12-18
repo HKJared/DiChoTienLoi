@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Positions } from 'react-native-calendars/src/expandableCalendar';
 // import Icon from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Ionicons'
 
@@ -7,9 +8,13 @@ const Header = ({ title, onBackPress }: { title: string; onBackPress: () => void
 
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={onBackPress } >
-        <Icon name="chevron-back" size={28} color="#0057a3" />
-      </TouchableOpacity>
+      {onBackPress ? (
+        <TouchableOpacity onPress={onBackPress} >
+          <Icon name="chevron-back" size={28} color="#0057a3" />
+        </TouchableOpacity>
+      ) : (
+        <View/>
+      )}
 
       <Text style={styles.headerTitle}>{title}</Text>
 
@@ -41,13 +46,14 @@ const styles = StyleSheet.create({
      borderBottomColor: '#ddd',
   },
   headerTitle: {
-    // position : 'absolute',
+    position: 'absolute',
+    flex: 1,
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
     color: '#0057a3',
-    left: 0,
-    right:0,
+    left: 50, 
+    right: 50, 
   },
   rightIconsContainer: {
       flexDirection: 'row', // Đặt các nút ở cạnh phải theo hàng ngang

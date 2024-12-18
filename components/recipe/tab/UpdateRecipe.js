@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getMarketplaceitem, MY_RECIPE_KEY, updatedData, checkNetworkStatus } from '../../../api/apiRecipe';
+import { getMarketplaceitem, MY_RECIPE_KEY, updatedData, checkNetworkStatus, getLocalData, MARKETITEM_KEY } from '../../../api/apiRecipe';
 import RNPickerSelect from 'react-native-picker-select';
 
 
@@ -46,13 +46,20 @@ export default  UpdateRecipe = ({ route , navigation }) => {
   useEffect(() => {
     const getmkplaceItem = async () => {
       try {
-        const marketplaceitem = await getMarketplaceitem();
-        setMarketplaceItem(marketplaceitem['items']); 
+        const isOnline = await checkNetworkStatus();
+
+        if (isOnline) {
+          const marketplaceitem = await getMarketplaceitem();
+          setMarketplaceItem(marketplaceitem['items']);
+        } else {
+          const marketplaceitem = await getLocalData(MARKETITEM_KEY);
+          setMarketplaceItem(marketplaceitem);
+        }
       } catch (error) {
         console.error("Error in:", error.message);
       }
     };
- 
+
     getmkplaceItem();
   }, []);
 
@@ -163,9 +170,10 @@ export default  UpdateRecipe = ({ route , navigation }) => {
   
   const handleUpdateRecipe = async (key, item) => {
     const validationError = validateData();
-    const isOnline = checkNetworkStatus();
+    const isOnline = await checkNetworkStatus();
+
     if (validationError) {
-      Alert.alert('Error', validationError);
+      Alert.alert('Lỗi', validationError);
       return;
     }
 
@@ -175,8 +183,6 @@ export default  UpdateRecipe = ({ route , navigation }) => {
     }
 
     try {
-
-
       const result = await updatedData(item.id, newData);
 
       if (result.status === 200) {
@@ -199,7 +205,7 @@ export default  UpdateRecipe = ({ route , navigation }) => {
         await AsyncStorage.setItem(key, JSON.stringify(updatedData));
         
 
-        Alert.alert('Success', `Đã cập nhật công thức nấu ăn ${item.name}`);
+        Alert.alert('Thành công', `Đã cập nhật công thức nấu ăn ${item.name}`);
 
         navigation.goBack();
         
@@ -208,7 +214,7 @@ export default  UpdateRecipe = ({ route , navigation }) => {
       }
     } catch (error) {
       console.error('Error while updating recipe:', error);
-      Alert.alert('Error', 'Failed to update recipe');
+      Alert.alert('Lỗi', 'Cập nhật thất bại');
     }
   };
 

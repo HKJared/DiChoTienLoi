@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Image, TouchableOpacity, Text, FlatList, SafeAreaView } from "react-native";
+import { StyleSheet, View, Image, TouchableOpacity, Text, FlatList,   RefreshControl } from "react-native";
 import colorlibrary from "../../../assets/color/colorlibrary";
 import RecipeItem from "../tab/RecipeItem";
 import CategoryList from "../tab/CategoryLayout";
@@ -13,10 +13,36 @@ export default function RecipeSuggest({
                                         categoriesData, 
                                         filteredRecipes, 
                                         handleCategorySelect, 
-                                        navigation }) {
+                                        navigation,
+                                        loadAction,
+                                      }) {
+  
                                           
+  const [refreshing, setRefreshing] = useState(false);                                       
   const [title, setTitle] = useState('Gợi ý');
-  const [showCategoryTab, setShowCategoryTab] = useState(false); // Trạng thái hiển thị tab categories
+  const [showCategoryTab, setShowCategoryTab] = useState(false); 
+  const [currentPage, setCurrentPage] = useState(1); 
+  const itemsPerPage = 10; 
+  
+  const onRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+       loadAction();
+       setRefreshing(false);
+    }, 1000);
+  };
+
+  const totalPages = Math.ceil((filteredRecipes?.length || 0) / itemsPerPage);
+  
+  const currentRecipes = filteredRecipes?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+
+  const handlePageSelect = (page) => {
+    setCurrentPage(page);
+  };
 
   const toggleCategoryTab = () => {
     setShowCategoryTab(!showCategoryTab);
@@ -28,8 +54,7 @@ export default function RecipeSuggest({
     } else {
       setTitle('Gợi ý');
     }
-  }, [searchText]);
-
+  }, [searchText, isSearch]);
 
 
   return (
@@ -62,10 +87,12 @@ export default function RecipeSuggest({
 
       <View style={styles.recipeItem}>
         <FlatList
-          data={filteredRecipes}
+          data={currentRecipes}
           renderItem={({ item }) =>  
           <TouchableOpacity
-            onPress={() => navigation.navigate('Công thức nấu ăn', {item})}
+            onPress={() => {
+              console.log('chuyển đên trang của:', item);
+              navigation.navigate('Công thức nấu ăn', {item})}}
           >    
             <RecipeItem data={item} /> 
           </TouchableOpacity>}
@@ -75,8 +102,44 @@ export default function RecipeSuggest({
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator= {false}
+
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[colorlibrary["--color-blue-bg"]]} 
+              title="Đang tải..." 
+            />
+          }
+
         />
       </View>
+
+
+
+       <View style={styles.pagination}>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handlePageSelect(index + 1)}
+              style={[
+                styles.pageButton,
+                currentPage === index + 1 && styles.activePageButton,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.pageButtonText,
+                  currentPage === index + 1 && styles.activePageButtonText,
+                ]}
+              >
+                {index + 1}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      
+
     </View>
   );
 }
@@ -167,6 +230,34 @@ const styles = StyleSheet.create({
     backgroundColor:colorlibrary["--white-90"]
   },
 
-
+  pagination: {
+    position: 'absolute',
+    bottom: 15, 
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8, // Khoảng cách bên trong giữa các nút
+    shadowOffset: { width: 0, height: 2 },
+    borderRadius: 8, // Bo góc container
+  },
+  pageButton: {
+    padding: 10, // Tăng kích thước nút
+    marginHorizontal: 8, // Tăng khoảng cách giữa các nút
+    borderRadius: 8, // Làm nút tròn
+    backgroundColor: colorlibrary["--white-60"],
+  },
+  activePageButton: {
+    backgroundColor: colorlibrary["--color-blue-bg"],
+  },
+  pageButtonText: {
+    color: colorlibrary["--black-100"],
+    fontSize: 16, // Tăng kích thước chữ
+  },
+  activePageButtonText: {
+    color: colorlibrary["--white-100"],
+    fontWeight: 'bold',
+  },
 
 });

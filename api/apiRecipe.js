@@ -159,7 +159,7 @@ const getMarketplaceitem = async () =>{
         },
       }
     );
-    console.log('Success', response.data.message);
+
     return response.data;
 
   } catch (error) {
@@ -200,6 +200,24 @@ const deleteRecipe = async (recipeId) =>{
 };
 
 
+async function GetPageItem(page = 1, itemsPerPage = 10) {
+  try {
+    const response = await axios.get(`${BASE_HOST_URL}api/recipes`, {
+      params: {
+        page: page,
+        itemsPerPage: itemsPerPage,
+      },
+    });
+
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching recipes:", error);
+    throw error;
+  }
+}
+
+
 // ########################## Local Storage ##############################
 
 // check network
@@ -223,16 +241,14 @@ const getLocalData = async (key) => {
 };
 
 
-const storeCategoriesData = async (key, categoriesData) => {
+const storeData = async (key, categoriesData) => {
   try {
     await AsyncStorage.setItem(key, JSON.stringify(categoriesData));
-    console.log('Đã lưu dữ liệu categoriesList và local');
+    console.log('Đã lưu dữ liệu vào local');
   } catch (error) {
     console.error('Lỗi khi lưu dữ liệu vào AsyncStorage:', error);
   }
 };
-
-
 
 
 
@@ -277,12 +293,12 @@ const viewAllLocalData = async () => {
 const CATEGORIES_KEY = 'CategoriesData'
 const SAVE_RECIPE_KEY = 'SaveRecipeData';
 const MY_RECIPE_KEY = 'MyRecipeData';
+const MARKETITEM_KEY = 'MarketItemData'
 
-
-export {CATEGORIES_KEY,SAVE_RECIPE_KEY,MY_RECIPE_KEY,
+export {CATEGORIES_KEY,SAVE_RECIPE_KEY,MY_RECIPE_KEY,MARKETITEM_KEY,
         viewAllLocalData,
         getLocalData,
-        storeCategoriesData,    
+        storeData,    
         checkNetworkStatus, 
         getRecipeCategories, 
         getRecipe, 
@@ -293,5 +309,6 @@ export {CATEGORIES_KEY,SAVE_RECIPE_KEY,MY_RECIPE_KEY,
         getMarketplaceitem, 
         deleteRecipe,
         storeRecipeData,
-
+        GetPageItem
+        
       } 
