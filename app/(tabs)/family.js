@@ -1,20 +1,62 @@
-import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import Header from "../../components/Header";
 import FamilyMain from "../../components/family/screen/FamilyMain";
-import CreateGroup from "../../components/family/screen/CreateGroup";
+import CreateGroupScreen from "../../components/family/screen/CreateGroup";
+import FamilyGroups from "../../components/family/screen/FamilyGroups";
+import { getToken } from "../../services/storageService"; // Hàm lấy token
 
 export default function App() {
   const [isCreateGroup, setIsCreateGroup] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Trạng thái xác thực
+  const [selectedGroup, setSelectedGroup] = useState(null); // Trạng thái nhóm được chọn
+
+  // Kiểm tra token khi component được load
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await getToken();
+      if (!token) {
+        // Nếu không có token, bạn có thể hiển thị một trang đăng nhập hoặc điều hướng
+        // Chuyển sang login page
+      } else {
+        setIsAuthenticated(true); // Nếu có token, người dùng đã đăng nhập
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   const handleCreateGroup = () => {
-    setIsCreateGroup(true); // Đổi màn hình sang CreateGroup
+    setIsCreateGroup(true); // Đổi màn hình sang CreateGroupScreen
   };
+
+  const handleCancel = () => {
+    setIsCreateGroup(false); // Quay lại FamilyMain
+  };
+
+  const handleGroupSelect = (groupId) => {
+    setSelectedGroup(groupId); // Cập nhật nhóm được chọn
+  };
+
+  if (!isAuthenticated) {
+    return null; // Hoặc có thể hiển thị một loading spinner khi kiểm tra token
+  }
+
   return (
     <View style={styles.container}>
-      {isCreateGroup ? (
-        <CreateGroup setIsCreateGroup={setIsCreateGroup} /> // Hiển thị CreateGroup nếu isCreateGroup là true
+      {selectedGroup ? (
+        <FamilyGroups groupId={selectedGroup} /> // Hiển thị FamilyGroup nếu đã chọn nhóm
+      ) : isCreateGroup ? (
+        <CreateGroupScreen
+          onCreateGroup={handleCancel}
+          setIsCreateGroup={setIsCreateGroup}
+        />
       ) : (
-        <FamilyMain onCreateGroup={handleCreateGroup} /> // Hiển thị FamilyMain với onCreateGroup là hàm chuyển màn hình
+        <FamilyMain
+          onCreateGroup={handleCreateGroup}
+          setIsCreateGroup={setIsCreateGroup}
+          onGroupSelect={handleGroupSelect} // Truyền hàm chọn nhóm
+        />
       )}
     </View>
   );
@@ -23,5 +65,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
   },
 });

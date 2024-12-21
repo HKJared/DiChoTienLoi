@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import ProfileScreen from "../../components/user/screen/ProfileScreen";
 import { getToken } from "../../services/storageService"; // Lấy token từ AsyncStorage
+import Header from "../../components/Header";
 
 export default function TabUserScreen() {
   const router = useRouter();
@@ -33,10 +34,12 @@ export default function TabUserScreen() {
 
   return (
     <View style={styles.container}>
-      {isLoggedIn ? <>
+      {isLoggedIn ? (
+        <>
           <Header title="Trang cá nhân" />
           <ProfileScreen />
-        </> : null}
+        </>
+      ) : null}
     </View>
   );
 }
