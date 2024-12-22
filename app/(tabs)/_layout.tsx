@@ -40,6 +40,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="fridge"
+        options={{
+          title: "Fridge",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "cart" : "cart-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="cooking"
         options={{
           title: "Cooking",
