@@ -120,7 +120,6 @@ export default function ProfileScreen() {
       try {
         // Gọi API upload
         const uploadData = await apiUploadFile(formData);
-        console.log(uploadData);
 
         if (!uploadData || !uploadData.avatar) {
           throw new Error("Failed to upload avatar image.");

@@ -137,16 +137,14 @@ export const apiDeleteFamilyGroup = async (groupId) => {
 export const apiAddMemberToFamilyGroup = async (groupId, memberId) => {
   try {
     const headers = await getHeaders();
-    const response = await fetch(
-      `${BASE_HOST_URL}api/user/family-group/${groupId}/add-member`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          member_id: memberId,
-        }),
-      }
-    );
+    const response = await fetch(`${BASE_HOST_URL}api/user/family-members`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        family_group_id: groupId,
+        member_ids: memberId,
+      }),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -166,17 +164,16 @@ export const apiAddMemberToFamilyGroup = async (groupId, memberId) => {
 export const apiRemoveMemberFromFamilyGroup = async (groupId, memberId) => {
   try {
     const headers = await getHeaders();
-    const response = await fetch(
-      `${BASE_HOST_URL}api/user/family-group/${groupId}/remove-member`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          member_id: memberId,
-        }),
-      }
-    );
+    const response = await fetch(`${BASE_HOST_URL}api/user/family-member`, {
+      method: "DELETE",
+      headers,
+      body: JSON.stringify({
+        family_group_id: groupId,
+        member_id: memberId,
+      }),
+    });
 
+    // Kiểm tra trạng thái phản hồi
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
@@ -184,7 +181,9 @@ export const apiRemoveMemberFromFamilyGroup = async (groupId, memberId) => {
       );
     }
 
-    return await response.json();
+    // Trả về phản hồi thành công
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Remove Member from Family Group error:", error.message);
     throw error;
