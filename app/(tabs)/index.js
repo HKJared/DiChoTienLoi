@@ -8,9 +8,9 @@ const infoOverView = ['22 phút','3-4 người', '80.000đ', '15 cal'];
 
 export default function App() {
   return (
-    <View style={styles.container}>
+      <View style={styles.container}>
         <RecipeMain/>
-    </View>
+      </View>
   );
 }
 
