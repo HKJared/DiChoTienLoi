@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -10,9 +10,10 @@ import {
 import { useRouter } from "expo-router";
 import { apiCreateFamilyGroup } from "../../../api/apiFamily";
 import { apiGetUserByUsernameOrPhoneNumber } from "../../../api/apiUser";
+import { apiGetUserInfo } from "../../../api/apiUser";
 import Header from "../../Header";
 import BASE_HOST_URL from "../../../api/baseHostUrl";
-export default function CreateGroup({ setIsCreateGroup }) {
+export default function CreateGroup({ setIsCreateGroup, onCreate }) {
   const router = useRouter();
 
   // Trạng thái lưu tên nhóm, thành viên và tìm kiếm
@@ -24,12 +25,31 @@ export default function CreateGroup({ setIsCreateGroup }) {
   const [searchText, setSearchText] = useState(""); // Lưu trữ từ khóa tìm kiếm
   const [searchResults, setSearchResults] = useState([]); // Lưu trữ kết quả tìm kiếm
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userData = await apiGetUserInfo();
+        setUser(userData.user);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+        Alert.alert("Error", "Failed to fetch user information.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   // Hàm xử lý thêm thành viên vào nhóm
   const handleAddMember = (member) => {
     if (!members.some((m) => m.id === member.id)) {
       setMembers([...members, member]);
     }
   };
+  console.log(members);
 
   // Hàm xử lý xóa thành viên khỏi nhóm
   const handleRemoveMember = (memberId) => {
@@ -47,7 +67,7 @@ export default function CreateGroup({ setIsCreateGroup }) {
     setError(null);
 
     try {
-      const memberIds = members.map((member) => member.id); // Lấy IDs của thành viên
+      const memberIds = [...members.map((member) => member.id), user.id]; // Lấy IDs của thành viên
       await apiCreateFamilyGroup(groupName, memberIds); // Gọi API tạo nhóm
       alert("Nhóm đã được tạo thành công!");
       setIsCreateGroup(false); // Quay lại màn hình trước
@@ -111,7 +131,7 @@ export default function CreateGroup({ setIsCreateGroup }) {
             searchResults.map((result) => (
               <View key={result.id} style={styles.searchResultItem}>
                 <Image
-                  source={{ uri: result.avatarUrl }}
+                  source={{ uri: `${BASE_HOST_URL}${result.avatar_url}` }}
                   style={styles.avatar}
                 />
                 <View style={styles.resultInfo}>
@@ -160,6 +180,13 @@ export default function CreateGroup({ setIsCreateGroup }) {
             <Text style={styles.createButtonText}>
               {isLoading ? "Đang tạo..." : "Tạo nhóm"}
             </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setIsCreateGroup(false)} // Quay lại FamilyMain khi nhấn nút Hủy
+          >
+            <Text style={styles.cancelButtonText}>Hủy</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -224,7 +251,8 @@ const styles = StyleSheet.create({
     tintColor: "#888",
   },
   searchResultsContainer: {
-    marginTop: 10,
+    marginBottom: 20,
+    marginTop: -10,
   },
   searchResultItem: {
     padding: 10,
@@ -289,6 +317,7 @@ const styles = StyleSheet.create({
     color: "#FF5C5C",
     fontWeight: "bold",
     fontSize: 14,
+    marginLeft: 40,
   },
   createButton: {
     width: "60%",
@@ -297,7 +326,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   createButtonText: {
     color: "#fff",
@@ -308,5 +337,19 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 14,
     textAlign: "center",
+  },
+  cancelButton: {
+    width: "60%",
+    paddingVertical: 14,
+    backgroundColor: "#FF5C5C",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  cancelButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
