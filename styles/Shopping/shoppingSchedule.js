@@ -156,6 +156,7 @@ const shoppingScheduleStyle = StyleSheet.create({
     resizeMode: "cover",
   },
   containerImgNameFood: {
+    width: "50%",
     display: "flex",
     flexDirection: "row",
     gap: 6,
@@ -186,6 +187,7 @@ const shoppingScheduleStyle = StyleSheet.create({
     color: colors.white,
   },
   textNameFood: {
+    whiteSpace: "wrap",
     fontFamily: "Roboto",
     fontSize: 16,
     fontWeight: "regular",

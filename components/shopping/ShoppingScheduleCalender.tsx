@@ -44,8 +44,22 @@ const ShoppingScheduleCalender = ({
     }
   };
 
-  // Chuyển đổi selectedDate sang đối tượng Date nếu có
-  const selectedDateObject = selectedDate ? new Date(selectedDate) : null;
+  let selectedDateObject: Date | null = null;
+
+  if (selectedDate) {
+    const parts = selectedDate.split("/");
+    if (parts.length === 1) {
+      // If the format is "DD", we add the current month and year
+      selectedDateObject = new Date(
+        `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${parts[0]}`
+      );
+    } else if (parts.length === 2) {
+      // If the format is "DD/MM", we can directly create the Date object
+      selectedDateObject = new Date(
+        `${new Date().getFullYear()}-${parts[1]}-${parts[0]}`
+      );
+    }
+  }
 
   // Cập nhật current để hiển thị đúng tháng của selectedDate hoặc ngày hiện tại nếu chưa chọn
   const currentDate = selectedDate || new Date().toISOString().split("T")[0];
@@ -65,7 +79,7 @@ const ShoppingScheduleCalender = ({
   const [selectedUnits, setSelectedUnits] = useState({});
 
   const handleUnitPress = (itemId: string, unit: string) => {
-    console.log(itemId, unit);
+    // console.log(itemId, unit);
     setSelectedUnits((prevUnits) => ({
       ...prevUnits,
       [itemId]: unit, // Cập nhật đơn vị cho item tương ứng
