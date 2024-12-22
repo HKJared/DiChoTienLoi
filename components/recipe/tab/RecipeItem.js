@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions  } from 'react-native';
 import colorlibrary from '../../../assets/color/colorlibrary';
 
 const RecipeItem = ({ data }) => {
@@ -64,7 +64,8 @@ const RecipeItem = ({ data }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: (Dimensions.get('window').width - 40) / 2,
+    flex: 1,
     height: 200,
     backgroundColor: 'transparent',
     flexDirection: 'column',
@@ -77,24 +78,26 @@ const styles = StyleSheet.create({
     height: 131,
     borderRadius: 16,
     backgroundColor: 'transparent',
-    shadowColor: 'rgba(0, 0, 0, 0.5)',
+    shadowColor: colorlibrary['--color-shawdow'],
     elevation: 5,
   },
   detail: {
-    width: 188,
+    width: '100%',
     height: 66,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 4,
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+
   },
   name: {
     height: 28,
-    width: 180,
+    width:'100%',
     paddingHorizontal: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+
   },
   text: {
     fontFamily: 'Roboto',

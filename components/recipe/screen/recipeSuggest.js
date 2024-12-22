@@ -9,6 +9,7 @@ import CategoryList from "../tab/CategoryLayout";
 
 export default function RecipeSuggest({ 
                                         isSearch, 
+                                        setIsSearch,
                                         searchText, 
                                         categoriesData, 
                                         filteredRecipes, 
@@ -30,6 +31,8 @@ export default function RecipeSuggest({
        loadAction();
        setRefreshing(false);
     }, 1000);
+    setIsSearch(false);
+
   };
 
   const totalPages = Math.ceil((filteredRecipes?.length || 0) / itemsPerPage);
@@ -85,7 +88,7 @@ export default function RecipeSuggest({
         </View>
       )}
 
-      <View style={styles.recipeItem}>
+      <View style={styles.recipeItemContainer}>
         <FlatList
           data={currentRecipes}
           renderItem={({ item }) =>  
@@ -138,8 +141,6 @@ export default function RecipeSuggest({
             </TouchableOpacity>
           ))}
         </View>
-      
-
     </View>
   );
 }
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorlibrary["--white-100"]
   },
   title: {
-    flex: 0,
+    flex:0,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -173,26 +174,31 @@ const styles = StyleSheet.create({
     color: colorlibrary["--color-blue-bg"],
     textAlign: 'left',
   },
-  recipeItem: {
+  recipeItemContainer: {
     flex: 1,
+    width: '100%',
     height: "100%"
   },
+
   columnWrapper: {
-    justifyContent: 'space-between'
+    flex: 1,
+    width: '100%',
+    justifyContent: 'space-between',
+    gap: 10, 
+
   },
   listContainer: {
     paddingHorizontal: 0,
     gap: 20,
   },
+
   keyWordIcon: {
     width: 18,
     height: 18,
   },
-
-
   categoryTab: {
-    flex: 0,
-    width: 274,
+    flex: 1,
+    width: '100%',
     position: 'absolute',
     top: 50,  
     right: 0,

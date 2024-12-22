@@ -28,7 +28,6 @@ import {getRecipeCategories,
         } from "../../../api/apiRecipe";
 
 
-
 const Stack = createStackNavigator(); 
 
 export default function Final_screen(){
@@ -76,7 +75,6 @@ function RecipeMain({navigation}) {
     }
  
   };
-
 
   const getFullData = async () => {
     try {
@@ -143,9 +141,9 @@ function RecipeMain({navigation}) {
 
   useEffect(() => {
     getFullData();
-    const unsubscribe = navigation.addListener('focus', () => {
-      getFullData();
-    });
+    // const unsubscribe = navigation.addListener('focus', () => {
+    //   getFullData();
+    // });
     return () => unsubscribe();
   }, [navigation, networkStatus]);
 
@@ -168,7 +166,7 @@ function RecipeMain({navigation}) {
 
   return (
       <View style={styles.container}>
-          <PannelHeader setIsSearch={setIsSearch} setSearchText={setSearchText}/>
+          <PannelHeader isSearch= {isSearch} setIsSearch={setIsSearch} setSearchText={setSearchText}/>
           <RecipeCategory 
           isSearch={isSearch} 
           categoriesData={categoriesData} 
@@ -176,6 +174,7 @@ function RecipeMain({navigation}) {
           />
           <RecipeSuggest 
           isSearch={isSearch} 
+          setIsSearch= {setIsSearch}
           searchText={searchText} 
           categoriesData={categoriesData} 
           filteredRecipes={filteredRecipes} 
@@ -196,19 +195,24 @@ function RecipeMain({navigation}) {
   );
 }
 
-const PannelHeader = ({ setIsSearch, setSearchText}) => {
+const PannelHeader = ({isSearch,  setIsSearch, setSearchText}) => {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [localSearchText, setLocalSearchText] = useState("");
 
   const search = () => {
-    if (localSearchText.trim() !== "") {
-      setHeaderVisible(false);  
+    if (localSearchText.trim() !== "") {  
       setIsSearch(true); 
-      setSearchText(localSearchText); 
+      setSearchText(localSearchText);
+      setLocalSearchText("");
     } else {
       Alert.alert('Cảnh báo','Hãy tìm kiếm bằng từ khóa!');
     }
   };
+
+  useEffect(() => {
+    setHeaderVisible(!isSearch)
+  }, [isSearch]);
+
 
   return (
     <View style={styles.pannelHeader}>
