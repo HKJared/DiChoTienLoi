@@ -15,16 +15,10 @@ import {
 } from "@/api/marketplaceCategories";
 import React, { useState, useEffect } from "react";
 import { Calendar } from "react-native-calendars"; // Thư viện lịch
-import shoppingScheduleStyle from "@/styles/Shopping/shoppingSchedule";
+import shoppingScheduleStyle from "@/styles/Fridge/fridge";
 import BASE_HOST_URL from "@/api/baseHostUrl";
-const getFormattedDate = (date: Date) => {
-  const day = date.getDate();
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
-  return `${day} Tháng ${currentMonth}, ${currentYear}`;
-};
-
-const ShoppingScheduleCalender = ({
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const Fridge = ({
   selectedDate,
   onDateChange,
   onComplete,
@@ -44,26 +38,8 @@ const ShoppingScheduleCalender = ({
     }
   };
 
-  let selectedDateObject: Date | null = null;
-
-  if (selectedDate) {
-    const parts = selectedDate.split("/");
-    if (parts.length === 1) {
-      // If the format is "DD", we add the current month and year
-      selectedDateObject = new Date(
-        `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${parts[0]}`
-      );
-    } else if (parts.length === 2) {
-      // If the format is "DD/MM", we can directly create the Date object
-      selectedDateObject = new Date(
-        `${new Date().getFullYear()}-${parts[1]}-${parts[0]}`
-      );
-    }
-  }
-
   // Cập nhật current để hiển thị đúng tháng của selectedDate hoặc ngày hiện tại nếu chưa chọn
   const currentDate = selectedDate || new Date().toISOString().split("T")[0];
-  console.log("selectedDate", selectedDate);
   const [inputText, setInputText] = useState("");
   // const [inputTextShopping, setInputTextShopping] = useState("");
   const [isSuggestionBoxVisible, setSuggestionBoxVisible] = useState(false);
@@ -174,36 +150,61 @@ const ShoppingScheduleCalender = ({
   useEffect(() => {
     // console.log("categories", items);
   }, [items]);
+
+  const [itemsByDay, setItemsByDay] = useState<Record<string, any[]>>({});
+  useEffect(() => {
+    const loadItemsByDay = async () => {
+      try {
+        const storedItems = await AsyncStorage.getItem("itemsByDay");
+        console.log("stored", storedItems);
+        setItemsByDay(storedItems ? JSON.parse(storedItems) : {});
+      } catch (error) {
+        console.error("Error loading itemsByDay:", error);
+      }
+    };
+
+    loadItemsByDay();
+  }, []);
+
+  const itemsArray = Object.values(itemsByDay).flat();
+  //   console.log("itemsbyday", itemsArray);
+  const mergeItems = (items) => {
+    const mergedItems = [];
+
+    items.forEach((item) => {
+      // Tìm phần tử đã có trong mergedItems với id và unit giống nhau
+      const existingItemIndex = mergedItems.findIndex(
+        (mergedItem) =>
+          mergedItem.id === item.id && mergedItem.unit === item.unit
+      );
+
+      if (existingItemIndex !== -1) {
+        // Nếu tìm thấy, cộng dồn quantity
+        mergedItems[existingItemIndex].quantity = (
+          parseFloat(mergedItems[existingItemIndex].quantity) +
+          parseFloat(item.quantity)
+        ).toString();
+      } else {
+        // Nếu không tìm thấy, thêm item mới vào mergedItems
+        mergedItems.push({ ...item });
+      }
+    });
+
+    return mergedItems;
+  };
+  const mergedItems = mergeItems(itemsArray);
+  //   const listMergedItems = mergedItems.map((item) => ({
+  //     ...item, // Giữ nguyên tất cả các trường
+  //     new_id:
+  //   }));
+  //   console.log("merge", listMergedItems);
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       style={shoppingScheduleStyle.container} // Xóa ngoặc {}
       showsVerticalScrollIndicator={true}
     >
-      <View style={shoppingScheduleStyle.containerCalenderEdit}>
-        <View style={shoppingScheduleStyle.calender}>
-          <Image
-            source={require("@/assets/images/shopping/today-outline.png")}
-            style={shoppingScheduleStyle.iconCalender}
-          />
-          <Text>
-            {selectedDateObject
-              ? getFormattedDate(selectedDateObject)
-              : "Chưa chọn ngày"}
-          </Text>
-        </View>
-
-        {/* <TouchableOpacity
-          style={shoppingScheduleStyle.editCalender}
-          onPress={() => setShowCalendar(!showCalendar)}
-        >
-          <Image
-            source={require("@/assets/images/shopping/pencil.png")}
-            style={shoppingScheduleStyle.iconCalender}
-          />
-        </TouchableOpacity> */}
-      </View>
-
       {/* Hiển thị lịch khi showCalendar */}
       {showCalendar && (
         <View style={shoppingScheduleStyle.calendarContainer}>
@@ -319,7 +320,7 @@ const ShoppingScheduleCalender = ({
         {/* Danh mục thực phẩm */}
         <View style={shoppingScheduleStyle.containerFoodCate}>
           <Text style={shoppingScheduleStyle.textFoodCate}>
-            Danh mục mua sắm
+            Danh mục tủ lạnh
           </Text>
           <TouchableOpacity onPress={handleShowFoodCate}>
             <Text style={shoppingScheduleStyle.textShowFood}>
@@ -357,12 +358,15 @@ const ShoppingScheduleCalender = ({
         )}
       </View>
       {/* Danh sách mua sắm */}
-      <View style={shoppingScheduleStyle.containerCateShopping}>
+      <ScrollView
+        style={shoppingScheduleStyle.containerCateShopping}
+        contentContainerStyle={{ paddingBottom: 30 }}
+      >
         <Text style={shoppingScheduleStyle.textShoppingCate}>
           Danh sách mua sắm
         </Text>
         <View style={shoppingScheduleStyle.containerListCateShopping}>
-          {items.map((item, index) => {
+          {mergedItems.map((item, index) => {
             // Tìm tên danh mục dựa trên category_id của item
             const categoryName = categories.find(
               (i) => i.id === item.category_id
@@ -396,7 +400,7 @@ const ShoppingScheduleCalender = ({
                 <View style={shoppingScheduleStyle.containerInputCateShopping}>
                   <TextInput
                     style={shoppingScheduleStyle.inputShopping}
-                    placeholder="Số lượng"
+                    placeholder={item.quantity}
                     placeholderTextColor={colors.white60}
                     keyboardType="numeric" // Hiển thị bàn phím số
                     value={inputTextShopping[item.id]} // Giá trị riêng biệt cho mỗi item
@@ -418,7 +422,7 @@ const ShoppingScheduleCalender = ({
                       }}
                     >
                       <Text style={shoppingScheduleStyle.unitText}>
-                        {selectedUnits[item.id] || ""}
+                        {selectedUnits[item.id] || item.unit}
                       </Text>
                       <Image
                         source={require("@/assets/images/shopping/arrow_bottom.png")}
@@ -446,7 +450,7 @@ const ShoppingScheduleCalender = ({
             );
           })}
         </View>
-      </View>
+      </ScrollView>
       <View style={shoppingScheduleStyle.containerButtonSuccess}>
         <TouchableOpacity
           style={shoppingScheduleStyle.ButtonSuccess}
@@ -461,4 +465,4 @@ const ShoppingScheduleCalender = ({
   );
 };
 
-export default ShoppingScheduleCalender;
+export default Fridge;

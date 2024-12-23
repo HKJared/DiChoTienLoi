@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StatusBar, StyleSheet } from "react-native";
 import Header from "@/components/Header";
 import HeaderScheduleShopping from "@/components/shopping/HeaderScheduleShopping";
 import ShoppingCalender from "@/components/shopping/ShoppingCalender";
 import ShoppingScheduleCalender from "@/components/shopping/ShoppingScheduleCalender";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function ShoppingScreen() {
   const [isScheduleMode, setIsScheduleMode] = useState(false); // State Header
   const [selectedDate, setSelectedDate] = useState<string | null>(null); // Lưu ngày đã chọn
@@ -73,9 +73,23 @@ export default function ShoppingScreen() {
     }
   };
 
-  // console.log("Items By Day", itemsByDay);
-  // console.log("Selected Day", getDayFromDate(selectedDate));
+  console.log("Items By Day", itemsByDay);
+  const saveItemsByDay = async (items: Record<string, any[]>) => {
+    try {
+      const data = await AsyncStorage.setItem(
+        "itemsByDay",
+        JSON.stringify(items)
+      );
+      console.log("Item saved", data);
+    } catch (error) {
+      console.error("Error saving itemsByDay:", error);
+    }
+  };
 
+  // Lưu itemsByDay mỗi khi nó thay đổi
+  useEffect(() => {
+    saveItemsByDay(itemsByDay);
+  }, [itemsByDay]);
   return (
     <View>
       <StatusBar hidden={true} />

@@ -10,7 +10,7 @@ import {
 import shoppingCalenderStyle from "@/styles/Shopping/shopping";
 import { colors } from "@/styles/variable";
 import { getMarketCategories } from "@/api/marketplaceCategories";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // Hàm lấy các ngày trong tháng hiện tại
 const getDaysInCurrentMonth = () => {
   const today = new Date();
