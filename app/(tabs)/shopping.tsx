@@ -78,6 +78,7 @@ export default function ShoppingScreen() {
 
   return (
     <View>
+ 
       <StatusBar hidden={true} />
       {isScheduleMode ? (
         <HeaderScheduleShopping onCreateNewSchedule={handleCreateNewSchedule} />

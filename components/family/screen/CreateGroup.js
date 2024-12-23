@@ -120,7 +120,7 @@ export default function CreateGroup({ setIsCreateGroup, onCreate }) {
           <View style={styles.divider} />
           <TouchableOpacity style={styles.searchIcon}>
             <Image
-              source={require("../../recipe/assets/search-outline.png")} // Replace with your search icon path
+              source={require("../../../assets/images/recipes/search-outline.png")} // Replace with your search icon path
               style={styles.icon}
             />
           </TouchableOpacity>
