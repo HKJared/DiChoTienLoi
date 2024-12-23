@@ -10,7 +10,7 @@ import {
 import shoppingCalenderStyle from "@/styles/Shopping/shopping";
 import { colors } from "@/styles/variable";
 import { getMarketCategories } from "@/api/marketplaceCategories";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // Hàm lấy các ngày trong tháng hiện tại
 const getDaysInCurrentMonth = () => {
   const today = new Date();
@@ -56,6 +56,7 @@ const ShoppingCalender = ({
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [items, setItems] = useState();
   const [itemIdRemove, setItemIdRemove] = useState<number | null>(null);
+  const [itemIdEdit, setItemIdEdit] = useState<number | null>(null);
   // console.log("onListItems", onListItems);
   // Cập nhật `specialDays` dựa trên `onListItems`
   useEffect(() => {
@@ -112,14 +113,18 @@ const ShoppingCalender = ({
   const handlePress = (index: number, idItem) => {
     setSelectedItem(index);
     setItemIdRemove(idItem);
+    setItemIdEdit(idItem);
     console.log("index", index);
     console.log("idItem", idItem);
   };
 
   const isSpecialDay = (day: number) => specialDays.includes(day);
   const handleDelete = (daySelect, itemId) => {
-    console.log("daySelect", daySelect, itemId);
+    // console.log("daySelect", daySelect, itemId);
     onDeleteItem(daySelect, itemId); // Gọi hàm xóa với daySelect và item.id
+  };
+  const handleEdit = (daySelect, itemId) => {
+    console.log("daySelect", daySelect, itemId);
   };
   const renderNoSchedule = () => (
     <View style={shoppingCalenderStyle.containerNoSchedule}>
@@ -166,7 +171,10 @@ const ShoppingCalender = ({
               source={require("@/assets/images/shopping/trash-outline.png")}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={shoppingCalenderStyle.containerImg}>
+          <TouchableOpacity
+            style={shoppingCalenderStyle.containerImg}
+            onPress={() => handleEdit(daySelect, itemIdEdit)}
+          >
             <Image source={require("@/assets/images/shopping/pencil.png")} />
           </TouchableOpacity>
         </View>
