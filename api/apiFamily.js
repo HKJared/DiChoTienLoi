@@ -82,20 +82,22 @@ export const apiGetFamilyGroup = async (id) => {
 };
 
 // Update Family Group
-export const apiUpdateFamilyGroup = async (groupId, name, memberIds) => {
+export const apiUpdateFamilyGroup = async (groupId, name) => {
   try {
     const headers = await getHeaders();
-    const response = await fetch(
-      `${BASE_HOST_URL}api/user/family-group/${groupId}`,
-      {
-        method: "PUT",
-        headers,
-        body: JSON.stringify({
+    const response = await fetch(`${BASE_HOST_URL}api/user/family-group`, {
+      method: "PUT",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        family_group_id: groupId,
+        newData: {
           name,
-          member_ids: memberIds,
-        }),
-      }
-    );
+        },
+      }),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
