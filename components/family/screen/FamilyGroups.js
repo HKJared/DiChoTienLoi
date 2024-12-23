@@ -9,6 +9,7 @@ import {
   Image,
   Alert,
   TextInput,
+  Modal,
 } from "react-native";
 import Header from "../../Header";
 import {
@@ -16,6 +17,7 @@ import {
   apiRemoveMemberFromFamilyGroup,
   apiAddMemberToFamilyGroup,
   apiDeleteFamilyGroup,
+  apiUpdateFamilyGroup,
 } from "../../../api/apiFamily";
 import {
   apiGetUserInfo,
@@ -36,6 +38,9 @@ const FamilyGroups = ({ groupId, onBack }) => {
   const [isSearching, setIsSearching] = useState(false);
 
   const [isListExpanded, setIsListExpanded] = useState(true);
+
+  const [modalVisible, setModalVisible] = useState(false); // State modal
+  const [newGroupName, setNewGroupName] = useState(""); // Lưu tên nhóm mới
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -168,6 +173,22 @@ const FamilyGroups = ({ groupId, onBack }) => {
     } catch (error) {
       console.error("Delete Group error:", error.message);
       Alert.alert("Error", "Đã xảy ra lỗi khi xóa nhóm.");
+    }
+  };
+
+  const handleUpdateGroup = async () => {
+    try {
+      const response = await apiUpdateFamilyGroup(groupId, newGroupName);
+      if (response.message === "Cập nhật thông tin gia đình thành công.") {
+        setGroupName(newGroupName);
+        setModalVisible(false); // Close the modal after update
+        Alert.alert("Success", "Tên nhóm đã được cập nhật.");
+      } else {
+        Alert.alert("Error", "Không thể cập nhật tên nhóm.");
+      }
+    } catch (error) {
+      console.error("Update group error:", error.message);
+      Alert.alert("Error", "Đã xảy ra lỗi khi cập nhật tên nhóm.");
     }
   };
 
@@ -304,12 +325,7 @@ const FamilyGroups = ({ groupId, onBack }) => {
           <View style={styles.footerButtonsContainer}>
             <TouchableOpacity
               style={[styles.footerButton, styles.updateButton]}
-              onPress={() => {
-                Alert.alert(
-                  "Cập nhật nhóm",
-                  "Chức năng cập nhật nhóm được thực hiện ở đây."
-                );
-              }}
+              onPress={() => setModalVisible(true)}
             >
               <Text style={styles.footerButtonText}>Cập nhật nhóm</Text>
             </TouchableOpacity>
@@ -335,6 +351,40 @@ const FamilyGroups = ({ groupId, onBack }) => {
           </View>
         )}
       </ScrollView>
+
+      {/* Modal nhập tên nhóm mới */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Cập nhật tên nhóm</Text>
+            <TextInput
+              style={styles.inputModal}
+              placeholder="Nhập tên nhóm mới"
+              value={newGroupName}
+              onChangeText={setNewGroupName}
+            />
+            <View style={styles.modalButtonsContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleUpdateGroup}
+              >
+                <Text style={styles.modalButtonText}>Cập nhật</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Hủy</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -499,6 +549,56 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 14,
+  },
+
+  // Các style mới cho Modal
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  modalButtonsContainer: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    height: 100,
+    marginTop: 10,
+  },
+
+  modalButton: {
+    padding: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
+    width: "50%", // Giới hạn chiều rộng của nút
+    alignItems: "center",
+    marginVertical: 5, // Thêm một khoảng cách giữa các nút
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  inputModal: {
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 10,
+    marginBottom: 10,
+    width: "100%",
   },
 });
 
