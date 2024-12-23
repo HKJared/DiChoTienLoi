@@ -7,25 +7,57 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Alert,
 } from "react-native";
-import { apiGetFamilyGroups } from "../../../api/apiFamily"; // Import các API từ file apiFamily.js
+import { apiGetFamilyGroups } from "../../../api/apiFamily";
+import { apiGetUserInfo } from "../../../api/apiUser";
 import Header from "../../Header";
 
 export default function FamilyMain({ setIsCreateGroup, onGroupSelect }) {
-  const [userGroups, setUserGroups] = useState([]);
-  const [joinedGroups, setJoinedGroups] = useState([]);
+  const [userGroups, setUserGroups] = useState([]); // Nhóm người dùng là trưởng nhóm
+  const [joinedGroups, setJoinedGroups] = useState([]); // Nhóm người dùng là thành viên
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch family groups
+  const [user, setUser] = useState(null);
+
+  // Lấy thông tin người dùng
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userData = await apiGetUserInfo();
+        setUser(userData.user);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+        Alert.alert("Error", "Failed to fetch user information.");
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  // Fetch family groups và phân loại nhóm dựa trên group_leader
   const fetchFamilyGroups = async () => {
     try {
       setLoading(true);
       setError(null);
       const groups = await apiGetFamilyGroups(); // Gọi API để lấy danh sách nhóm
-      console.log(groups);
-      setUserGroups(groups.familiesAsLeader); // Nhóm mà người dùng là trưởng nhóm
-      setJoinedGroups(groups.familiesAsMember); // Nhóm mà người dùng là thành viên
+
+      // Kiểm tra nếu dữ liệu có cấu trúc hợp lệ
+      if (groups.familiesAsLeader && groups.familiesAsMember) {
+        // Lọc nhóm theo thông tin người dùng
+        const userGroups = groups.familiesAsLeader.filter(
+          (group) => group.group_leader === user.id
+        ); // Nhóm người dùng làm trưởng nhóm
+        const joinedGroups = groups.familiesAsMember.filter(
+          (group) => group.group_leader !== user.id
+        ); // Nhóm mà người dùng tham gia (không phải trưởng nhóm)
+
+        setUserGroups(userGroups);
+        setJoinedGroups(joinedGroups);
+      } else {
+        throw new Error("Dữ liệu nhóm không hợp lệ");
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -34,8 +66,10 @@ export default function FamilyMain({ setIsCreateGroup, onGroupSelect }) {
   };
 
   useEffect(() => {
-    fetchFamilyGroups();
-  }, []);
+    if (user) {
+      fetchFamilyGroups();
+    }
+  }, [user]);
 
   const renderGroupItem = ({ item }) => (
     <TouchableOpacity
@@ -86,28 +120,37 @@ export default function FamilyMain({ setIsCreateGroup, onGroupSelect }) {
         <View style={styles.body}>
           {!showNoGroupMessage && (
             <>
-              <Text style={styles.sectionTitle}>Nhóm của bạn</Text>
-              <FlatList
-                data={userGroups}
-                renderItem={renderGroupItem}
-                keyExtractor={(item) => item.id}
-                style={styles.groupList}
-              />
+              {/* Nhóm của bạn (trưởng nhóm) */}
+              <View>
+                <Text style={styles.sectionTitle}>Nhóm của bạn</Text>
+                {userGroups.length > 0 && (
+                  <FlatList
+                    data={userGroups}
+                    renderItem={renderGroupItem}
+                    keyExtractor={(item) => item.id}
+                    style={styles.groupList}
+                  />
+                )}
+                <TouchableOpacity
+                  style={styles.createGroupButton1}
+                  onPress={() => setIsCreateGroup(true)}
+                >
+                  <Text style={styles.createGroupButtonText1}>+</Text>
+                </TouchableOpacity>
+              </View>
 
-              <TouchableOpacity
-                style={styles.createGroupButton1}
-                onPress={() => setIsCreateGroup(true)}
-              >
-                <Text style={styles.createGroupButtonText1}>+</Text>
-              </TouchableOpacity>
-
-              <Text style={styles.sectionTitle}>Nhóm bạn tham gia</Text>
-              <FlatList
-                data={joinedGroups}
-                renderItem={renderGroupItem}
-                keyExtractor={(item) => item.id}
-                style={styles.groupList}
-              />
+              {/* Nhóm bạn tham gia (thành viên) */}
+              <View>
+                <Text style={styles.sectionTitle}>Nhóm bạn tham gia</Text>
+                {joinedGroups.length > 0 && (
+                  <FlatList
+                    data={joinedGroups}
+                    renderItem={renderGroupItem}
+                    keyExtractor={(item) => item.id}
+                    style={styles.groupList}
+                  />
+                )}
+              </View>
             </>
           )}
 
