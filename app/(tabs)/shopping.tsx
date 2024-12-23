@@ -92,6 +92,7 @@ export default function ShoppingScreen() {
   }, [itemsByDay]);
   return (
     <View>
+ 
       <StatusBar hidden={true} />
       {isScheduleMode ? (
         <HeaderScheduleShopping onCreateNewSchedule={handleCreateNewSchedule} />
