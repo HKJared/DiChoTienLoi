@@ -1,3 +1,4 @@
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,108 +7,249 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React, { useState, useEffect, useRef } from "react";
 import shoppingCalenderStyle from "@/styles/Shopping/shopping";
 import { colors } from "@/styles/variable";
-import { getMarketCategories } from "@/controllers/marketplace-categories";
+import { getMarketCategories } from "@/api/marketplaceCategories";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // Hàm lấy các ngày trong tháng hiện tại
 const getDaysInCurrentMonth = () => {
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth();
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
-
   const days = [];
   for (
-    let day = firstDayOfMonth.getDate();
-    day <= lastDayOfMonth.getDate();
+    let day = 1;
+    day <= new Date(currentYear, currentMonth + 1, 0).getDate();
     day++
   ) {
     days.push(day);
   }
-
   return days;
+};
+
+const getDateOnly = (date: string): string => {
+  if (date.includes("T")) {
+    const dateObj = new Date(date);
+    return dateObj.toLocaleDateString("en-GB"); // Format DD/MM/YYYY
+  }
+  return date;
 };
 
 const ShoppingCalender = ({
   onCreateNewSchedule,
+  onDate,
+  onItems = [],
+  onListItems = [],
+  onDeleteItem,
 }: {
   onCreateNewSchedule: (date: string) => void;
+  onDate: string | null;
+  onItems: Array<any>;
+  onListItems: Array<any>;
+  onDeleteItem: any;
 }) => {
   const days = getDaysInCurrentMonth();
   const today = new Date().getDate();
-  const [selectedDay, setSelectedDay] = useState<number | null>(today);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedDay, setSelectedDay] = useState<number>(today);
+  const [specialDays, setSpecialDays] = useState<number[]>([]);
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
+  const [items, setItems] = useState();
+  const [itemIdRemove, setItemIdRemove] = useState<number | null>(null);
+  // console.log("onListItems", onListItems);
+  // Cập nhật `specialDays` dựa trên `onListItems`
+  useEffect(() => {
+    if (onListItems) {
+      const daysFromList = Object.keys(onListItems).map((day) =>
+        parseInt(day, 10)
+      );
+      setSpecialDays((prevDays) => [
+        ...new Set([...prevDays, ...daysFromList]),
+      ]);
+    }
+  }, [onListItems]);
+  useEffect(() => {
+    // console.log("specialDays:", specialDays); // Log giá trị selectedDay
+    // console.log("onItems:", onItems); // Log giá trị onItems
 
-  // Tham chiếu ScrollView
+    if (onItems && specialDays) {
+      const updatedItems = {
+        [specialDays]: onItems,
+      };
+      // console.log("updatedItems:", updatedItems);
+      setItems(updatedItems);
+    }
+  }, [onItems, specialDays]);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  // Danh sách các ngày đặc biệt
-  const specialDays = [7, 8, 14, 28, 1];
-
-  // Hàm tạo selectedDate với định dạng "YYYY-MM-DDT00:00:00.000Z"
-  const getSelectedDate = (day: number) => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-
-    const selectedDate = new Date(currentYear, currentMonth, day);
-    return selectedDate.toISOString();
-  };
+  // Cập nhật specialDays dựa trên onDate
+  useEffect(() => {
+    if (onDate) {
+      const [day] = getDateOnly(onDate).split("/");
+      const dayNumber = parseInt(day, 10);
+      if (!specialDays.includes(dayNumber)) {
+        setSpecialDays((prevDays) => [...prevDays, dayNumber]);
+      }
+    }
+  }, [onDate]);
+  // Cuộn đến ngày được chọn
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      const selectedDayIndex = days.indexOf(selectedDay);
+      if (selectedDayIndex !== -1) {
+        const itemWidth = 50;
+        const offset = Math.max(selectedDayIndex * itemWidth - 150, 0);
+        scrollViewRef.current.scrollTo({ x: offset, animated: true });
+      }
+    }
+  }, [selectedDay]);
 
   const handleDayPress = (day: number) => {
     setSelectedDay(day);
     setSelectedItem(null);
   };
 
-  // Kiểm tra xem ngày được chọn có phải là ngày đặc biệt không
-  const isSpecialDay = (day: number) => {
-    return specialDays.includes(day);
-  };
-
-  // Kiểm tra xem ngày được chọn có phải là ngày trong tương lai
-  const isFutureDaySelected = selectedDay && selectedDay > today;
-
-  // Effect để cuộn đến ngày đã chọn khi `selectedDay` thay đổi
-  useEffect(() => {
-    getData();
-    if (selectedDay && scrollViewRef.current) {
-      const selectedDayIndex = days.indexOf(selectedDay);
-      if (selectedDayIndex !== -1) {
-        const screenWidth = 360;
-        const itemWidth = 50;
-        const centerOffset = (screenWidth - itemWidth) / 2;
-
-        scrollViewRef.current.scrollTo({
-          x: selectedDayIndex * itemWidth - centerOffset,
-          animated: true,
-        });
-      }
-    }
-  }, [selectedDay]);
-  const getTodayDate = () => {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.getMonth() + 1; // Tháng bắt đầu từ 0, nên cộng thêm 1
-    const year = today.getFullYear();
-    return `${day} tháng ${month}, ${year}`;
-  };
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const handlePress = (index) => {
+  const handlePress = (index: number, idItem) => {
     setSelectedItem(index);
+    setItemIdRemove(idItem);
+    console.log("index", index);
+    console.log("idItem", idItem);
   };
-  // Gọi api
-  const getData = async () => {
-    const response = await getMarketCategories();
-    console.log("frontend ", response);
+
+  const isSpecialDay = (day: number) => specialDays.includes(day);
+  const handleDelete = (daySelect, itemId) => {
+    console.log("daySelect", daySelect, itemId);
+    onDeleteItem(daySelect, itemId); // Gọi hàm xóa với daySelect và item.id
   };
+  const renderNoSchedule = () => (
+    <View style={shoppingCalenderStyle.containerNoSchedule}>
+      <Image source={require("@/assets/images/shopping/noSchedule.png")} />
+      <Text style={shoppingCalenderStyle.textNoSchedule}>
+        Chưa có lịch mua sắm
+      </Text>
+      {selectedDay > today && (
+        <TouchableOpacity
+          style={shoppingCalenderStyle.createButton}
+          onPress={() => {
+            const selectedDate = `${selectedDay}/${new Date().getMonth() + 1}`;
+            onCreateNewSchedule(selectedDate);
+          }}
+        >
+          <Text style={shoppingCalenderStyle.textCreateButton}>Tạo mới</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getMarketCategories(); // Gọi API lấy danh sách categories
+        setCategories(response); // Lưu kết quả vào state categories
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+
+    fetchCategories(); // Gọi hàm fetchCategories khi component mount
+  }, []);
+
+  const renderScheduledItems = (daySelect: number) => {
+    return (
+      <View style={shoppingCalenderStyle.containerBoxData}>
+        <View style={shoppingCalenderStyle.containerEditData}>
+          <TouchableOpacity
+            style={shoppingCalenderStyle.containerImg}
+            onPress={() => handleDelete(daySelect, itemIdRemove)}
+          >
+            <Image
+              source={require("@/assets/images/shopping/trash-outline.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={shoppingCalenderStyle.containerImg}>
+            <Image source={require("@/assets/images/shopping/pencil.png")} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={shoppingCalenderStyle.containerDataToday}>
+          {onListItems[daySelect].map((item, index) => {
+            // Tìm kiếm category tương ứng với item.id
+            const category = categories.categories.find(
+              (cat) => cat.id === item.category_id
+            );
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[
+                  shoppingCalenderStyle.containerItemDataToday,
+                  selectedItem === index &&
+                    shoppingCalenderStyle.containerSelectedItemDataToday,
+                ]}
+                onPress={() => handlePress(index, item.id)}
+              >
+                <View style={shoppingCalenderStyle.containerWeight}>
+                  <Text style={shoppingCalenderStyle.textWeight}>
+                    {item.quantity} {item.unit}
+                  </Text>
+                </View>
+                <View style={shoppingCalenderStyle.containerDetailProduct}>
+                  <View
+                    style={shoppingCalenderStyle.containerTextDetailProduct}
+                  >
+                    <Text style={shoppingCalenderStyle.textTitleProduct}>
+                      {item.name}
+                    </Text>
+                    <View style={shoppingCalenderStyle.containerTypeTree}>
+                      {/* Kiểm tra xem category có tồn tại không và hiển thị tên category */}
+                      {category && (
+                        <>
+                          <Text style={shoppingCalenderStyle.textTypeTree}>
+                            {category.name} {/* Hiển thị tên category */}
+                          </Text>
+                          <Text style={shoppingCalenderStyle.textTypeTree}>
+                            {">"}
+                          </Text>
+                        </>
+                      )}
+                      <Text style={shoppingCalenderStyle.textTypeTree}>
+                        {item.name}
+                      </Text>
+                    </View>
+                    <View style={shoppingCalenderStyle.containerAddress}>
+                      <View style={shoppingCalenderStyle.containerAddress1}>
+                        <View
+                          style={shoppingCalenderStyle.containerAddressDot}
+                        ></View>
+                        <Text style={shoppingCalenderStyle.textAddress1}>
+                          <Text style={{ fontWeight: "bold" }}>Chợ Mơ:</Text> Số
+                          459 P. Bạch Mai, Trương Định, Hai Bà Trưng, ...
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        {selectedItem !== null && (
+          <View style={shoppingCalenderStyle.containerButtonSuccess}>
+            <TouchableOpacity style={shoppingCalenderStyle.ButtonSuccess}>
+              <Text style={shoppingCalenderStyle.textButtonSuccess}>
+                Hoàn Thành
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  };
+
   return (
     <View style={shoppingCalenderStyle.container}>
       <View style={shoppingCalenderStyle.containerCalenderToday}>
-        <Text>{getTodayDate()}</Text>
+        <Text>{new Date().toLocaleDateString()}</Text>
       </View>
-
       <ScrollView
         horizontal
         style={shoppingCalenderStyle.containerCalender}
@@ -128,15 +270,13 @@ const ShoppingCalender = ({
             onPress={() => handleDayPress(day)}
           >
             <Text style={shoppingCalenderStyle.textItemCalender}>{day}</Text>
-
-            {/* Kiểm tra nếu ngày là đặc biệt và thay đổi màu sắc dotSpecial */}
             {isSpecialDay(day) && (
               <View
                 style={[
                   shoppingCalenderStyle.dotSpecial,
                   {
                     backgroundColor:
-                      day === selectedDay ? colors.white : colors.primary, // Nếu ngày đã chọn thì dùng màu xanh, không thì dùng màu đỏ
+                      day === selectedDay ? colors.white : colors.primary,
                   },
                 ]}
               ></View>
@@ -144,179 +284,9 @@ const ShoppingCalender = ({
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-      {!isSpecialDay(selectedDay) ? (
-        <View style={shoppingCalenderStyle.containerNoSchedule}>
-          <Image source={require("@/assets/images/shopping/noSchedule.png")} />
-          <Text style={shoppingCalenderStyle.textNoSchedule}>
-            Chưa có lịch mua sắm
-          </Text>
-          {isFutureDaySelected && (
-            <TouchableOpacity
-              style={shoppingCalenderStyle.createButton}
-              onPress={() => {
-                const selectedDate = getSelectedDate(selectedDay!); // Lấy selectedDate theo định dạng ISO
-                onCreateNewSchedule(selectedDate);
-              }}
-            >
-              <Text style={shoppingCalenderStyle.textCreateButton}>
-                Tạo mới
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      ) : (
-        <View style={shoppingCalenderStyle.containerBoxData}>
-          {/* Xóa sửa */}
-          <View style={shoppingCalenderStyle.containerEditData}>
-            <TouchableOpacity style={shoppingCalenderStyle.containerImg}>
-              <Image
-                source={require("@/assets/images/shopping/trash-outline.png")}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={shoppingCalenderStyle.containerImg}>
-              <Image source={require("@/assets/images/shopping/pencil.png")} />
-            </TouchableOpacity>
-          </View>
-          {/* Data ngày */}
-          <View style={shoppingCalenderStyle.containerDataToday}>
-            {/* Item data */}
-            <TouchableOpacity
-              style={[
-                shoppingCalenderStyle.containerItemDataToday,
-                selectedItem === 1 &&
-                  shoppingCalenderStyle.containerSelectedItemDataToday, // Thay đổi màu nếu mục được chọn
-              ]}
-              onPress={() => handlePress(1)}
-            >
-              <View style={shoppingCalenderStyle.containerWeight}>
-                <Text style={shoppingCalenderStyle.textWeight}>50kg</Text>
-              </View>
-              <View style={shoppingCalenderStyle.containerDetailProduct}>
-                {/* Thông tin */}
-                <View style={shoppingCalenderStyle.containerTextDetailProduct}>
-                  {/* Tên sản phẩm */}
-                  <Text style={shoppingCalenderStyle.textTitleProduct}>
-                    Gạo ST25
-                  </Text>
-                  {/* Loại > Gạo  */}
-                  <View style={shoppingCalenderStyle.containerTypeTree}>
-                    <Text style={shoppingCalenderStyle.textTypeTree}>
-                      Ngũ cốc
-                    </Text>
-                    <Text style={shoppingCalenderStyle.textTypeTree}>
-                      {">"}
-                    </Text>
-                    <Text style={shoppingCalenderStyle.textTypeTree}>Gạo</Text>
-                  </View>
-                  {/* Địa chỉ */}
-                  <View style={shoppingCalenderStyle.containerAddress}>
-                    {/* Địa chỉ-1 */}
-                    <View style={shoppingCalenderStyle.containerAddress1}>
-                      <View
-                        style={shoppingCalenderStyle.containerAddressDot}
-                      ></View>
-                      <View style={shoppingCalenderStyle.containertextAddress1}>
-                        <Text style={shoppingCalenderStyle.textAddress1}>
-                          <Text style={{ fontWeight: "bold" }}>
-                            Chợ Thịnh Liệt:
-                          </Text>{" "}
-                          Kho 4 Đ. Giải Phóng, Thịnh Liệt, ...
-                        </Text>
-                      </View>
-                    </View>
-                    {/* Địa chỉ-2 */}
-                    <View style={shoppingCalenderStyle.containerAddress1}>
-                      <View
-                        style={shoppingCalenderStyle.containerAddressDot}
-                      ></View>
-                      <View style={shoppingCalenderStyle.containertextAddress1}>
-                        <Text style={shoppingCalenderStyle.textAddress1}>
-                          <Text style={{ fontWeight: "bold" }}>Chợ Mơ:</Text> Số
-                          459 P. Bạch Mai, Trương Định, Hai Bà Trưng, ...
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-                {/* Btn arrow right */}
-              </View>
-            </TouchableOpacity>
-            {/* Item data */}
-            <TouchableOpacity
-              style={[
-                shoppingCalenderStyle.containerItemDataToday,
-                selectedItem === 2 &&
-                  shoppingCalenderStyle.containerSelectedItemDataToday, // Thay đổi màu nếu mục được chọn
-              ]}
-              onPress={() => handlePress(2)}
-            >
-              <View style={shoppingCalenderStyle.containerWeight}>
-                <Text style={shoppingCalenderStyle.textWeight}>50kg</Text>
-              </View>
-              <View style={shoppingCalenderStyle.containerDetailProduct}>
-                {/* Thông tin */}
-                <View style={shoppingCalenderStyle.containerTextDetailProduct}>
-                  {/* Tên sản phẩm */}
-                  <Text style={shoppingCalenderStyle.textTitleProduct}>
-                    Gạo ST25
-                  </Text>
-                  {/* Loại > Gạo  */}
-                  <View style={shoppingCalenderStyle.containerTypeTree}>
-                    <Text style={shoppingCalenderStyle.textTypeTree}>
-                      Ngũ cốc
-                    </Text>
-                    <Text style={shoppingCalenderStyle.textTypeTree}>
-                      {">"}
-                    </Text>
-                    <Text style={shoppingCalenderStyle.textTypeTree}>Gạo</Text>
-                  </View>
-                  {/* Địa chỉ */}
-                  <View style={shoppingCalenderStyle.containerAddress}>
-                    {/* Địa chỉ-1 */}
-                    <View style={shoppingCalenderStyle.containerAddress1}>
-                      <View
-                        style={shoppingCalenderStyle.containerAddressDot}
-                      ></View>
-                      <View style={shoppingCalenderStyle.containertextAddress1}>
-                        <Text style={shoppingCalenderStyle.textAddress1}>
-                          <Text style={{ fontWeight: "bold" }}>
-                            Chợ Thịnh Liệt:
-                          </Text>{" "}
-                          Kho 4 Đ. Giải Phóng, Thịnh Liệt, ...
-                        </Text>
-                      </View>
-                    </View>
-                    {/* Địa chỉ-2 */}
-                    <View style={shoppingCalenderStyle.containerAddress1}>
-                      <View
-                        style={shoppingCalenderStyle.containerAddressDot}
-                      ></View>
-                      <View style={shoppingCalenderStyle.containertextAddress1}>
-                        <Text style={shoppingCalenderStyle.textAddress1}>
-                          <Text style={{ fontWeight: "bold" }}>Chợ Mơ:</Text> Số
-                          459 P. Bạch Mai, Trương Định, Hai Bà Trưng, ...
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-                {/* Btn arrow right */}
-              </View>
-            </TouchableOpacity>
-          </View>
-          {/* Button Hoàn Thành */}
-          {selectedItem && (
-            <View style={shoppingCalenderStyle.containerButtonSuccess}>
-              <TouchableOpacity style={shoppingCalenderStyle.ButtonSuccess}>
-                <Text style={shoppingCalenderStyle.textButtonSuccess}>
-                  Hoàn Thành
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      )}
+      {!isSpecialDay(selectedDay)
+        ? renderNoSchedule()
+        : renderScheduledItems(selectedDay)}
     </View>
   );
 };
