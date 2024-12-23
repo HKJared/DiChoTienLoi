@@ -14,7 +14,7 @@ export const apiClient = async (endpoint, method = "GET", body = null) => {
       options.body = JSON.stringify(body);
     }
 
-    const response = await fetch(`${BASE_HOST_URL}api/${endpoint}`, options);
+    const response = await fetch(`${BASE_HOST_URL}api${endpoint}`, options);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -25,11 +25,7 @@ export const apiClient = async (endpoint, method = "GET", body = null) => {
   }
 };
 
-export const apiClientWithToken = async (
-  endpoint,
-  method = "GET",
-  body = null
-) => {
+export const apiClientWithToken = async ( endpoint, method = "GET", body = null ) => {
   const token = getToken();
 
   // if (!token) {
@@ -49,7 +45,7 @@ export const apiClientWithToken = async (
       options.body = JSON.stringify(body);
     }
 
-    const response = await fetch(`${BASE_HOST_URL}api/${endpoint}`, options);
+    const response = await fetch(`${BASE_HOST_URL}api${endpoint}`, options);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

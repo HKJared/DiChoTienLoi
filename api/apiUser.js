@@ -34,7 +34,7 @@ export const apiGetUserInfo = async () => {
 export const apiChangePassword = async (oldPassword, newPassword) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${BASE_HOST_URL}/api/change-password`, {
+    const response = await fetch(`${BASE_HOST_URL}api/user/change-password`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -63,7 +63,7 @@ export const apiChangePassword = async (oldPassword, newPassword) => {
 export const apiChangeAvatar = async (avatarUrl) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${BASE_HOST_URL}api/change-avatar`, {
+    const response = await fetch(`${BASE_HOST_URL}api/user/change-avatar`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export const apiChangeAvatar = async (avatarUrl) => {
 export const apiUpdateUserInfo = async (userInfo) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${BASE_HOST_URL}api/update-info`, {
+    const response = await fetch(`${BASE_HOST_URL}api/user/update-info`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +117,7 @@ export const apiUpdateUserInfo = async (userInfo) => {
 export const apiUploadFile = async (formData) => {
   try {
     const token = await getToken();
-    const response = await fetch(`${BASE_HOST_URL}/upload`, {
+    const response = await fetch(`${BASE_HOST_URL}api/user/upload`, {
       method: "POST",
       headers: {
         "Content-Type": "multipart/form-data",
@@ -135,6 +135,40 @@ export const apiUploadFile = async (formData) => {
     return data; // Trả về key (URL) của ảnh
   } catch (error) {
     console.error("Upload File Error:", error);
+    throw error;
+  }
+};
+
+// Hàm tìm kiếm người dùng theo username hoặc số điện thoại
+export const apiGetUserByUsernameOrPhoneNumber = async (keyword) => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error("No token found. Please log in again.");
+    }
+
+    const response = await fetch(
+      `${BASE_HOST_URL}api/user/user-username-or-phone-number?keyword=${keyword}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authentication: token,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to fetch user by username or phone number"
+      );
+    }
+
+    const data = await response.json();
+    return data.user; // Returning the user data from the response
+  } catch (error) {
+    console.error("Error fetching user by username or phone number:", error);
     throw error;
   }
 };

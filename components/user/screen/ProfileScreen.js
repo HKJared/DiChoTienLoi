@@ -22,6 +22,7 @@ import {
 } from "../../../api/apiUser";
 import { logout } from "../../../api/apiAuth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import BASE_HOST_URL from "../../../api/baseHostUrl";
 
 export default function ProfileScreen() {
   const [user, setUser] = useState(null);
@@ -84,6 +85,7 @@ export default function ProfileScreen() {
   };
 
   const handlePickAvatar = async () => {
+    // Xin quyền truy cập
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -95,42 +97,52 @@ export default function ProfileScreen() {
       return;
     }
 
+    // Mở trình chọn ảnh
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
+      aspect: [1, 1], // Tỷ lệ 1:1 cho avatar
+      quality: 1, // Chất lượng ảnh cao
     });
 
     if (!pickerResult.canceled) {
-      const selectedAsset = pickerResult.assets[0];
+      const selectedAsset = pickerResult.assets[0]; // Lấy thông tin ảnh
 
+      // Tạo FormData để gửi lên server
       const formData = new FormData();
       formData.append("files[]", {
         uri: selectedAsset.uri,
         name: selectedAsset.uri.split("/").pop(),
         type: selectedAsset.type,
       });
-      formData.append("keys[]", "avatar");
+      formData.append("keys[]", "avatar"); // Key cho ảnh avatar
 
       try {
+        // Gọi API upload
         const uploadData = await apiUploadFile(formData);
+        console.log(uploadData);
 
         if (!uploadData || !uploadData.avatar) {
           throw new Error("Failed to upload avatar image.");
         }
 
-        const avatarUrl = uploadData.avatar;
+        // Lấy URL avatar từ phản hồi
+        const avatarUrl = uploadData.avatar; // URL của ảnh vừa upload
+        console.log("Avatar URL:", avatarUrl);
 
+        // Gọi API để thay đổi avatar
         await apiChangeAvatar(avatarUrl);
 
+        // Cập nhật state user
         setUser((prevState) => {
           return {
             ...prevState,
-            avatar_url: avatarUrl,
+            avatar_url: avatarUrl, // Cập nhật đường dẫn avatar mới
           };
         });
 
+        // Cập nhật giá trị trong storage nếu cần
+        // Lưu lại avatar vào AsyncStorage hoặc LocalStorage nếu cần
         await AsyncStorage.setItem(
           "user",
           JSON.stringify({ ...user, avatar_url: avatarUrl })
@@ -166,12 +178,6 @@ export default function ProfileScreen() {
     setDateOfBirth(selectedDate || dateOfBirth);
   };
 
-  const [avatarUri, setAvatarUri] = useState(
-    user?.avatar_url
-      ? `http://192.168.1.10:4000/public${user.avatar_url}`
-      : null
-  );
-
   const handleImageError = () => {
     setAvatarUri(require("../assets/null-avt.jpg"));
   };
@@ -198,7 +204,9 @@ export default function ProfileScreen() {
       <TouchableOpacity onPress={handlePickAvatar}>
         <Image
           source={
-            avatarUri ? { uri: avatarUri } : require("../assets/null-avt.jpg")
+            user.avatar_url
+              ? { uri: `${BASE_HOST_URL}${user.avatar_url}` }
+              : require("../assets/null-avt.jpg")
           }
           style={styles.avatar}
           onError={handleImageError}
@@ -288,11 +296,16 @@ export default function ProfileScreen() {
 
       {/* Change Password Button */}
       <Text style={styles.label}></Text>
+
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Cập nhật thông tin</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.saveButton}
         onPress={() => setShowModal(true)}
       >
-        <Text style={styles.saveButtonText}>Change Password</Text>
+        <Text style={styles.saveButtonText}>Đổi mật khẩu</Text>
       </TouchableOpacity>
 
       {/* Modal to change password */}
@@ -304,7 +317,7 @@ export default function ProfileScreen() {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Change Password</Text>
+            <Text style={styles.modalTitle}>Đổi mật khẩu</Text>
 
             <TextInput
               style={styles.input}
@@ -325,25 +338,21 @@ export default function ProfileScreen() {
               style={styles.saveButton}
               onPress={handleChangePassword}
             >
-              <Text style={styles.saveButtonText}>Save</Text>
+              <Text style={styles.saveButtonText}>Đổi mật khẩu</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.cancelButton}
               onPress={() => setShowModal(false)}
             >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+              <Text style={styles.cancelButtonText}>Hủy</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Save Changes</Text>
-      </TouchableOpacity>
-
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Log Out</Text>
+        <Text style={styles.logoutButtonText}>Đăng xuất</Text>
       </TouchableOpacity>
     </ScrollView>
   );
