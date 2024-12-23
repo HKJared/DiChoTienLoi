@@ -15,6 +15,7 @@ import {
   apiGetFamilyGroup,
   apiRemoveMemberFromFamilyGroup,
   apiAddMemberToFamilyGroup,
+  apiDeleteFamilyGroup,
 } from "../../../api/apiFamily";
 import {
   apiGetUserInfo,
@@ -22,7 +23,7 @@ import {
 } from "../../../api/apiUser";
 import BASE_HOST_URL from "../../../api/baseHostUrl";
 
-const FamilyGroups = ({ groupId }) => {
+const FamilyGroups = ({ groupId, onBack }) => {
   const [groupMembers, setGroupMembers] = useState([]); // Mảng thành viên nhóm
   const [selectedDate, setSelectedDate] = useState("09");
   const [groupName, setGroupName] = useState(""); // Lưu tên nhóm
@@ -154,6 +155,22 @@ const FamilyGroups = ({ groupId }) => {
     setIsSearching(!isSearching); // Toggle trạng thái hiển thị tìm kiếm
   };
 
+  //hàm xóa nhóm
+  const handleDeleteGroup = async () => {
+    try {
+      const response = await apiDeleteFamilyGroup(groupId); // Gọi API xóa nhóm
+      if (response.message === "Xóa nhóm gia đình thành công.") {
+        Alert.alert("Thành công!", "Nhóm đã bị xóa!");
+        onBack(); // Quay lại màn hình trước đó
+      } else {
+        Alert.alert("Error", "Không thể xóa nhóm.");
+      }
+    } catch (error) {
+      console.error("Delete Group error:", error.message);
+      Alert.alert("Error", "Đã xảy ra lỗi khi xóa nhóm.");
+    }
+  };
+
   return (
     <>
       <Header
@@ -162,6 +179,12 @@ const FamilyGroups = ({ groupId }) => {
         }: ${groupName}`}
       />
       <ScrollView style={styles.container}>
+        <TouchableOpacity onPress={onBack} style={styles.button}>
+          <View style={styles.backButtonContainer}>
+            <Text style={styles.backArrow}>&#8592;</Text>
+            <Text style={styles.buttonText}>Tất cả các nhóm</Text>
+          </View>
+        </TouchableOpacity>
         {/* Group Members */}
         <View style={styles.section}>
           {/* Button to toggle member list */}
@@ -276,6 +299,41 @@ const FamilyGroups = ({ groupId }) => {
             </TouchableOpacity>
           </View>
         </View>
+
+        {isLeader && (
+          <View style={styles.footerButtonsContainer}>
+            <TouchableOpacity
+              style={[styles.footerButton, styles.updateButton]}
+              onPress={() => {
+                Alert.alert(
+                  "Cập nhật nhóm",
+                  "Chức năng cập nhật nhóm được thực hiện ở đây."
+                );
+              }}
+            >
+              <Text style={styles.footerButtonText}>Cập nhật nhóm</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.footerButton, styles.deleteButton]}
+              onPress={() => {
+                Alert.alert(
+                  "Xác nhận",
+                  "Bạn có chắc chắn muốn xóa nhóm này?",
+                  [
+                    { text: "Hủy", style: "cancel" },
+                    {
+                      text: "Xóa",
+                      onPress: handleDeleteGroup,
+                    },
+                  ],
+                  { cancelable: true }
+                );
+              }}
+            >
+              <Text style={styles.footerButtonText}>Xóa nhóm</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
     </>
   );
@@ -400,6 +458,47 @@ const styles = StyleSheet.create({
   addMemberButtonText: {
     fontSize: 14,
     color: "#fff",
+  },
+  button: {
+    marginBottom: 12,
+    marginLeft: -5,
+  },
+  backButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  backArrow: {
+    fontSize: 16,
+    fontWeight: "Bold",
+    marginRight: 2,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  footerButtonsContainer: {
+    flexDirection: "column",
+    marginVertical: 20,
+    paddingHorizontal: 10,
+    width: "50%",
+    alignSelf: "center",
+  },
+  footerButton: {
+    paddingVertical: 8,
+    marginVertical: 4,
+    borderRadius: 4,
+    alignItems: "center",
+  },
+  updateButton: {
+    backgroundColor: "#007bff",
+  },
+  deleteButton: {
+    backgroundColor: "#ff4d4d",
+  },
+  footerButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
 

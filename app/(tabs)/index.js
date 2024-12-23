@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
-import RecipeMain from '../../components/recipe/screeen/RecipeMain';
+import RecipeMain from '../../components/recipe/screen/RecipeMain';
 
 
 

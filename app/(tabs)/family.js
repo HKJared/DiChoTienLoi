@@ -38,6 +38,10 @@ export default function App() {
     setSelectedGroup(groupId); // Cập nhật nhóm được chọn
   };
 
+  const handleBackToMain = () => {
+    setSelectedGroup(null); // Đặt lại selectedGroup để quay về FamilyMain
+  };
+
   if (!isAuthenticated) {
     return null; // Hoặc có thể hiển thị một loading spinner khi kiểm tra token
   }
@@ -45,7 +49,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       {selectedGroup ? (
-        <FamilyGroups groupId={selectedGroup} /> // Hiển thị FamilyGroup nếu đã chọn nhóm
+        <FamilyGroups groupId={selectedGroup} onBack={handleBackToMain} />
       ) : isCreateGroup ? (
         <CreateGroupScreen
           onCreateGroup={handleCancel}
