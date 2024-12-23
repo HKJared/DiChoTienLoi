@@ -113,20 +113,23 @@ export const apiUpdateFamilyGroup = async (groupId, name, memberIds) => {
 export const apiDeleteFamilyGroup = async (groupId) => {
   try {
     const headers = await getHeaders();
-    const response = await fetch(
-      `${BASE_HOST_URL}api/user/family-group/${groupId}`,
-      {
-        method: "DELETE",
-        headers,
-      }
-    );
+    const response = await fetch(`${BASE_HOST_URL}api/user/family-group`, {
+      method: "DELETE",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json", // Đảm bảo Content-Type
+      },
+      body: JSON.stringify({
+        family_group_id: groupId, // Gửi groupId
+      }),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to delete family group");
     }
 
-    return await response.json();
+    return await response.json(); // Trả về dữ liệu JSON
   } catch (error) {
     console.error("Delete Family Group error:", error.message);
     throw error;
