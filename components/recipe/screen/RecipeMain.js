@@ -141,10 +141,6 @@ function RecipeMain({navigation}) {
 
   useEffect(() => {
     getFullData();
-    // const unsubscribe = navigation.addListener('focus', () => {
-    //   getFullData();
-    // });
-    return () => unsubscribe();
   }, [navigation, networkStatus]);
 
 
@@ -199,14 +195,21 @@ const PannelHeader = ({isSearch,  setIsSearch, setSearchText}) => {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [localSearchText, setLocalSearchText] = useState("");
 
-  const search = () => {
-    if (localSearchText.trim() !== "") {  
-      setIsSearch(true); 
-      setSearchText(localSearchText);
-      setLocalSearchText("");
-    } else {
-      Alert.alert('Cảnh báo','Hãy tìm kiếm bằng từ khóa!');
+  const  search = async () => {
+    isOnline = await checkNetworkStatus();
+    if (isOnline) {
+      if (localSearchText.trim() !== "") {  
+        setIsSearch(true); 
+        setSearchText(localSearchText);
+        setLocalSearchText("");
+      } else {
+        Alert.alert('Cảnh báo','Hãy tìm kiếm bằng từ khóa!');
+      }
     }
+    else {
+      Alert.alert('cảnh báo', 'vui lòng kết nối internet')
+    }
+  
   };
 
   useEffect(() => {
